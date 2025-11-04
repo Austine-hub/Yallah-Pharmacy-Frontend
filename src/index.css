@@ -1,0 +1,45 @@
+/* ======================================================
+   🧱 Overflow Fix (Preserve Menus + Prevent Scrollbars)
+====================================================== */
+html,
+body {
+  overflow-x: hidden !important;
+  width: 100%;
+  max-width: 100%!important;
+}
+
+/* Prevent nested containers or menus from exceeding screen width */
+header,
+nav,
+main,
+footer,
+div,
+section {
+  max-width: 100%!important;
+  box-sizing: border-box;
+}
+
+/* Fix dropdowns accidentally causing overflow */
+[data-theme],
+.header,
+.mobileHeader,
+.menuOverlay,
+.mobileMenu,
+.dropdown {
+  overflow-x: clip;
+}
+
+/* Ensure dropdown menus don't push layout */
+.dropdown,
+.submenu {
+  position: relative;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* When mobile menu opens, lock background */
+body.menu-open {
+  overflow: hidden !important;
+  touch-action: none;
+}
+ 
