@@ -159,7 +159,11 @@ const Header: React.FC<HeaderProps> = ({
           onMouseEnter={() => handleMouseEnter(section.key)}
           onMouseLeave={handleMouseLeave}
         >
-          <button className={styles.navButton} aria-haspopup="true" aria-expanded={activeDropdown === section.key}>
+          <button 
+            className={styles.navButton} 
+            aria-haspopup="true" 
+            aria-expanded={activeDropdown === section.key}
+          >
             {section.label}
             <ChevronDown size={14} aria-hidden="true" />
           </button>
@@ -326,6 +330,10 @@ const Header: React.FC<HeaderProps> = ({
 
             <a href="/" className={styles.mobileLogo} aria-label="Yallah Pharmacy Home">
               <img src={logo} alt="Yallah Pharmacy" className={styles.mobileLogoImage} />
+              <div className={styles.mobileBrandName}>
+                <span className={styles.mobileBrandYallah}>YALLAH</span>
+                <span className={styles.mobileBrandPharmacy}>PHARMACY</span>
+              </div>
             </a>
 
             <button
