@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import styles from './Footer.module.css';
 
+
+import photo1 from '../../assets/license.png';
 interface FooterProps {
   className?: string;
 }
@@ -113,11 +115,11 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
               HEALTHFIELD is a registered pharmacy governed by the Pharmacy and Poisons Board of Kenya, PPB (K) Health Safety code P0940
             </p>
             <div className={styles.certificationBadge}>
-              <img 
-                src="/images/ppb-certification.png" 
-                alt="Pharmacy and Poisons Board Certification" 
-                className={styles.badgeImage}
-              />
+                <img 
+                  src={photo1} 
+                  alt="Pharmacy and Poisons Board Certification" 
+                  className={styles.badgeImage}
+                />
             </div>
           </div>
         </div>

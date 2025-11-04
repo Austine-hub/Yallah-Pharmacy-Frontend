@@ -95,8 +95,6 @@ const Header: React.FC<HeaderProps> = ({
   const menuRef = useRef<HTMLDivElement>(null);
   const dropdownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-
-  // Close mobile menu on outside click
   useEffect(() => {
     if (!isMobileMenuOpen) return;
 
@@ -115,7 +113,6 @@ const Header: React.FC<HeaderProps> = ({
     };
   }, [isMobileMenuOpen]);
 
-  // Cleanup dropdown timer on unmount
   useEffect(() => {
     return () => {
       if (dropdownTimerRef.current) {
@@ -324,14 +321,11 @@ const Header: React.FC<HeaderProps> = ({
               aria-label="Open navigation menu"
               aria-expanded={isMobileMenuOpen}
             >
-              <Menu size={24} />
+              <Menu size={20} />
             </button>
 
             <a href="/" className={styles.mobileLogo} aria-label="Yallah Pharmacy Home">
-              <div className={styles.mobileLogoContainer}>
-                <div className={styles.mobileLogoBrandName}>YALLAH PHARMACY</div>
-                <img src={logo} alt="" className={styles.mobileLogoImage} />
-              </div>
+              <img src={logo} alt="Yallah Pharmacy" className={styles.mobileLogoImage} />
             </a>
 
             <button
@@ -339,7 +333,7 @@ const Header: React.FC<HeaderProps> = ({
               onClick={() => navigate("/cart")}
               aria-label={`Shopping cart with ${cartCount} item${cartCount !== 1 ? 's' : ''}`}
             >
-              <ShoppingCart size={20} aria-hidden="true" />
+              <ShoppingCart size={18} aria-hidden="true" />
               {cartCount > 0 && (
                 <span className={styles.cartBadge} aria-hidden="true">
                   {cartCount}
@@ -349,41 +343,37 @@ const Header: React.FC<HeaderProps> = ({
           </div>
 
           <form className={styles.mobileSearch} onSubmit={handleSearchSubmit} role="search">
-            <div className={styles.mobileSearchWrapper}>
-              <input
-                type="search"
-                placeholder="Search for products"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={styles.mobileSearchInput}
-                aria-label="Search products"
-              />
-              <button type="submit" className={styles.mobileSearchButton} aria-label="Search">
-                <Search size={18} aria-hidden="true" />
-              </button>
-            </div>
+            <input
+              type="search"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={styles.mobileSearchInput}
+              aria-label="Search products"
+            />
+            <button type="submit" className={styles.mobileSearchButton} aria-label="Search">
+              <Search size={16} aria-hidden="true" />
+            </button>
           </form>
 
-          <div className={styles.mobileButtons}>
+          <div className={styles.mobileActions}>
             <button
-              className={styles.prescriptionButton}
+              className={styles.actionButton}
               onClick={() => navigate("/prescription")}
             >
-              Submit a Prescription
+              Submit Prescription
             </button>
             <button
-              className={styles.consultationButton}
+              className={styles.actionButton}
               onClick={() => navigate("/consultation")}
             >
-              Book a Consultation
+              Book Consultation
             </button>
           </div>
 
           <div className={styles.mobileDeliverTo}>
-            <MapPin size={16} aria-hidden="true" />
-            <span>
-              Deliver to <strong>{deliveryLocation}</strong>
-            </span>
+            <MapPin size={14} aria-hidden="true" />
+            <span>Deliver to <strong>{deliveryLocation}</strong></span>
           </div>
         </div>
       </header>
