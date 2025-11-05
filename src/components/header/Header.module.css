@@ -479,7 +479,7 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  border: 1.5px solid var(--brand-blue);
+  border: none;
   border-radius: 6px;
   background: var(--bg-white);
   color: var(--text-primary);
@@ -487,10 +487,19 @@
   transition: background-color var(--transition-base), color var(--transition-base);
 }
 
+.mobileSearchButton:focus,
+.mobileSearchButton:focus-visible {
+  outline: none;
+  box-shadow: none; /* removes the blue ring without affecting input */
+}
+
 .mobileSearchButton:active {
   background: var(--brand-blue);
   color: white;
+  outline: none;
+  box-shadow: none;
 }
+
 
 /* Mobile Action Buttons */
 .mobileActions {
@@ -539,10 +548,14 @@
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
   background: var(--delivery-orange);
+  border-radius: 9px;
   font-size: 0.75rem;
   font-weight: 500;
   color: white;
+  transform: scale(0.95);
+  transform-origin: center;
 }
+
 
 .mobileDeliverTo strong {
   font-weight: 700;
