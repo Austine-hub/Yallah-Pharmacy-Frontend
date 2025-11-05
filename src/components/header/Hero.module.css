@@ -271,3 +271,23 @@
   .mainSubtitle { font-size: 0.95rem; }
   .cta { padding: 7px 12px; }
 }
+
+@media (max-width: 640px) {
+  .mainHero {
+    height: 26vh; /* 45% of the tablet hero height */
+    min-height: 150px; /* optional safeguard for very small phones */
+  }
+
+  .mainTitle {
+    font-size: 1.1rem;
+  }
+
+  .mainSubtitle {
+    font-size: 0.85rem;
+  }
+
+  .cta {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+}
