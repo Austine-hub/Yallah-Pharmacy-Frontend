@@ -116,32 +116,26 @@ const LoadingFallback: FC = memo(() => (
           margin: "0 auto 1rem",
         }}
       />
-      <p style={{ color: "#6b7280", fontSize: "0.95rem" }}>
-        Loading content...
-      </p>
+      <p style={{ color: "#6b7280", fontSize: "0.95rem" }}>Loading content...</p>
     </div>
   </div>
 ));
-
 LoadingFallback.displayName = "LoadingFallback";
 
 // ===============================================================
-// 🧭 Scroll Restoration (Memoized for Performance)
+// 🧭 Scroll Restoration
 // ===============================================================
 const ScrollToTop: FC = memo(() => {
   const { pathname } = useLocation();
-  
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [pathname]);
-  
   return null;
 });
-
 ScrollToTop.displayName = "ScrollToTop";
 
 // ===============================================================
-// 🏠 Home Page Component (Memoized)
+// 🏠 Home Page Component
 // ===============================================================
 const HomePage: FC = memo(() => (
   <>
@@ -164,11 +158,10 @@ const HomePage: FC = memo(() => (
     <BlogSection />
   </>
 ));
-
 HomePage.displayName = "HomePage";
 
 // ===============================================================
-// 🚫 404 Not Found Component (Memoized)
+// 🚫 404 Not Found Component
 // ===============================================================
 const NotFound: FC = memo(() => (
   <motion.section
@@ -214,7 +207,6 @@ const NotFound: FC = memo(() => (
     </p>
   </motion.section>
 ));
-
 NotFound.displayName = "NotFound";
 
 // ===============================================================

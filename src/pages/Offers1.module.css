@@ -408,3 +408,12 @@
 .addIcon {
   margin-right: 2px;
 }
+
+
+.offerCard {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.offerCard:hover {
+  transform: scale(1.03);
+}

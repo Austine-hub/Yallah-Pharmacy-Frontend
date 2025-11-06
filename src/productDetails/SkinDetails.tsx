@@ -11,6 +11,7 @@ import type { SkinProduct } from '../data/SkinData'; // type-only import
 
 import styles from './Offers.module.css';
 
+
 // Placeholder component for related products (you'd need to create this)
 const RelatedProductCard: React.FC<{ product: SkinProduct }> = ({ product }) => (
     <div className={styles.relatedCard}>

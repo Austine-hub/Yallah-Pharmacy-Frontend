@@ -1,10 +1,11 @@
 // src/components/offers/Offers.tsx
-import React, { useState, memo } from "react";
-import { Link } from "react-router-dom";
-import { ShoppingCart, MessageCircle } from "lucide-react";
+import React, { useState, memo, useCallback } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ShoppingCart, MessageCircle, Eye } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import toast from "react-hot-toast";
 import styles from "./Offers.module.css";
+
 
 // === Import images ===
 import pic1 from "../assets/products/Allergy.png";
@@ -15,15 +16,14 @@ import pic5 from "../assets/products/Headache.png";
 import pic6 from "../assets/products/Eno.png";
 import pic7 from "../assets/products/Diclofenac.png";
 import pic8 from "../assets/products/UTI.png";
-
-type Offer = {
+interface Offer {
   id: string;
   name: string;
   image: string;
   discount: number;
   price: number;
   oldPrice: number;
-};
+}
 
 const offersData: Offer[] = [
   { id: "1", name: "Allergy Relief", image: pic1, discount: 12, price: 350, oldPrice: 490 },
@@ -37,13 +37,22 @@ const offersData: Offer[] = [
 ];
 
 const WHATSAPP_NUMBER = "254796787207";
-const WHATSAPP_MESSAGE = encodeURIComponent("Hello, I’d like to order this product:");
+const WHATSAPP_MESSAGE = encodeURIComponent("Hello, I'd like to order this product:");
 
 const Offers: React.FC = memo(() => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const { addToCart } = useCart();
+  const navigate = useNavigate();
 
-  const handleAddToCart = (offer: Offer) => {
+  // Navigate to product detail page
+  const handleProductClick = useCallback((productId: string) => {
+    navigate(`/product/${productId}`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [navigate]);
+
+  // Add to cart with event propagation control
+  const handleAddToCart = useCallback((offer: Offer, event: React.MouseEvent) => {
+    event.stopPropagation();
     addToCart({
       id: offer.id,
       name: offer.name,
@@ -52,88 +61,149 @@ const Offers: React.FC = memo(() => {
       quantity: 1,
     });
     toast.success(`${offer.name} added to cart 🛒`, { duration: 2000 });
-  };
+  }, [addToCart]);
 
-  const handleWhatsAppOrder = (productName: string) => {
+  // WhatsApp order with event propagation control
+  const handleWhatsAppOrder = useCallback((productName: string, event: React.MouseEvent) => {
+    event.stopPropagation();
     const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}%20${encodeURIComponent(
       productName
     )}`;
-    window.open(whatsappLink, "_blank");
-  };
+    window.open(whatsappLink, "_blank", "noopener,noreferrer");
+  }, []);
 
-  const handleImageClick = (image: string) => setSelectedImage(image);
-  const closeModal = () => setSelectedImage(null);
+  // Quick view modal
+  const handleImageClick = useCallback((image: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    setSelectedImage(image);
+  }, []);
+
+  const closeModal = useCallback(() => setSelectedImage(null), []);
+
+  // Keyboard accessibility
+  const handleKeyDown = useCallback((event: React.KeyboardEvent, callback: () => void) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      callback();
+    }
+  }, []);
 
   return (
-    <section className={styles.offersSection}>
+    <section className={styles.offersSection} aria-labelledby="offers-heading">
       {/* === Header === */}
       <div className={styles.header}>
-        <h2 className={styles.title}>Offers</h2>
-        <Link to="/buy-medicines" className={styles.viewAll}>
+        <h2 id="offers-heading" className={styles.title}>Offers</h2>
+        <Link 
+          to="/buy-medicines" 
+          className={styles.viewAll}
+          aria-label="View all available offers"
+        >
           View all offers →
         </Link>
       </div>
 
       {/* === Offers Grid === */}
-      <div className={styles.offersGrid}>
+      <div className={styles.offersGrid} role="list">
         {offersData.map((offer) => (
-          <div key={offer.id} className={styles.card}>
-            <div className={styles.discountTag}>-{offer.discount}%</div>
+          <article 
+            key={offer.id} 
+            className={styles.card}
+            role="listitem"
+            onClick={() => handleProductClick(offer.id)}
+            onKeyDown={(e) => handleKeyDown(e, () => handleProductClick(offer.id))}
+            tabIndex={0}
+            aria-label={`${offer.name}, ${offer.discount}% off, now KSh ${offer.price}`}
+          >
+            {/* Discount Badge */}
+            <div 
+              className={styles.discountTag} 
+              aria-label={`${offer.discount} percent discount`}
+            >
+              -{offer.discount}%
+            </div>
 
+            {/* Product Image with Quick View */}
             <div className={styles.imageWrapper}>
               <img
                 src={offer.image}
                 alt={offer.name}
                 className={styles.productImage}
                 loading="lazy"
-                onClick={() => handleImageClick(offer.image)}
               />
               <button
                 className={styles.quickViewBtn}
-                onClick={() => handleImageClick(offer.image)}
+                onClick={(e) => handleImageClick(offer.image, e)}
+                aria-label={`Quick view ${offer.name} image`}
+                type="button"
               >
-                Quick View
+                <Eye size={16} aria-hidden="true" />
+                <span>Quick View</span>
               </button>
             </div>
 
+            {/* Product Info */}
             <div className={styles.info}>
-              <p className={styles.name}>{offer.name}</p>
+              <h3 className={styles.name}>{offer.name}</h3>
               <div className={styles.prices}>
-                <span className={styles.newPrice}>
+                <span 
+                  className={styles.newPrice} 
+                  aria-label={`Sale price ${offer.price} Kenyan shillings`}
+                >
                   KSh {offer.price.toLocaleString()}
                 </span>
-                <span className={styles.oldPrice}>
+                <span 
+                  className={styles.oldPrice} 
+                  aria-label={`Original price ${offer.oldPrice} Kenyan shillings`}
+                >
                   KSh {offer.oldPrice.toLocaleString()}
                 </span>
               </div>
+              <p 
+                className={styles.savings} 
+                aria-label={`You save ${offer.oldPrice - offer.price} Kenyan shillings`}
+              >
+                Save KSh {(offer.oldPrice - offer.price).toLocaleString()}
+              </p>
             </div>
 
+            {/* Action Buttons */}
             <div className={styles.actions}>
-              {/* 🛒 Add to Cart (Primary) */}
+              {/* Add to Cart Button */}
               <button
                 className={styles.addToCart}
-                onClick={() => handleAddToCart(offer)}
+                onClick={(e) => handleAddToCart(offer, e)}
+                aria-label={`Add ${offer.name} to shopping cart`}
+                type="button"
               >
-                <ShoppingCart size={18} strokeWidth={1.8} />
+                <ShoppingCart size={18} strokeWidth={1.8} aria-hidden="true" />
                 <span>Add to Cart</span>
               </button>
 
-              {/* 💬 WhatsApp Order (Secondary) */}
+              {/* WhatsApp Order Button */}
               <button
                 className={styles.whatsappBtn}
-                onClick={() => handleWhatsAppOrder(offer.name)}
+                onClick={(e) => handleWhatsAppOrder(offer.name, e)}
+                aria-label={`Order ${offer.name} via WhatsApp`}
+                type="button"
               >
-                <MessageCircle size={18} strokeWidth={1.8} />
+                <MessageCircle size={18} strokeWidth={1.8} aria-hidden="true" />
                 <span>Order via WhatsApp</span>
               </button>
             </div>
-          </div>
+          </article>
         ))}
       </div>
 
       {/* === Image Modal === */}
       {selectedImage && (
-        <div className={styles.modalOverlay} onClick={closeModal}>
+        <div 
+          className={styles.modalOverlay} 
+          onClick={closeModal}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Product image preview"
+          onKeyDown={(e) => e.key === 'Escape' && closeModal()}
+        >
           <div
             className={styles.modalContent}
             onClick={(e) => e.stopPropagation()}
@@ -143,7 +213,12 @@ const Offers: React.FC = memo(() => {
               alt="Product Preview"
               className={styles.modalImage}
             />
-            <button className={styles.closeBtn} onClick={closeModal}>
+            <button 
+              className={styles.closeBtn} 
+              onClick={closeModal}
+              aria-label="Close image preview"
+              type="button"
+            >
               ✕
             </button>
           </div>
@@ -153,5 +228,6 @@ const Offers: React.FC = memo(() => {
   );
 });
 
-export default Offers;
+Offers.displayName = 'Offers';
 
+export default Offers;

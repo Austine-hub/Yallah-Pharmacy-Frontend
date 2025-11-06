@@ -1,4 +1,5 @@
 // src/components/WellnessBanner.tsx
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./WellnessBanner.module.css";
 
@@ -11,9 +12,8 @@ interface BannerCardProps {
 
 /* ------------------------
    🔹 BannerCard Component
-   - Keyboard-accessible
-   - Uses native <img> alt (no visible text)
-   - Lazy loads for performance
+   - Keyboard accessible
+   - Lazy loaded for performance
 -------------------------*/
 const BannerCard: React.FC<BannerCardProps> = ({
   imageSrc,
@@ -25,13 +25,12 @@ const BannerCard: React.FC<BannerCardProps> = ({
 
   const handleNavigate = () => navigate(linkTo);
 
-const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
-  if (event.key === "Enter" || event.key === " ") {
-    event.preventDefault();
-    navigate(linkTo);
-  }
-};
-
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      navigate(linkTo);
+    }
+  };
 
   return (
     <figure
@@ -49,10 +48,9 @@ const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
         loading="lazy"
         decoding="async"
         onError={(e) => {
-          e.currentTarget.alt = altText; // show alt text only if image fails
+          e.currentTarget.alt = altText;
         }}
       />
-      {/* Removed figcaption — alt text is used only for accessibility */}
     </figure>
   );
 };
@@ -60,7 +58,7 @@ const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
 /* ------------------------
    🔹 WellnessBanner Section
    - Maps multiple banners
-   - Semantic & accessible
+   - Fully responsive and centered
 -------------------------*/
 const WellnessBanner: React.FC = () => {
   const banners: BannerCardProps[] = [
@@ -95,3 +93,4 @@ const WellnessBanner: React.FC = () => {
 };
 
 export default WellnessBanner;
+
