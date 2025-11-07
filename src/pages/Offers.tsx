@@ -4,66 +4,43 @@ import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCart, MessageCircle, Eye } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import toast from "react-hot-toast";
-import styles from "./Offers.module.css";
+import styles from "./Offers.module.css"; // Assuming this still points to your CSS
 
-
-// === Import images ===
-import pic1 from "../assets/products/Allergy.png";
-import pic2 from "../assets/products/Anthelios.png";
-import pic3 from "../assets/products/Contraception.png";
-import pic4 from "../assets/products/Cough.png";
-import pic5 from "../assets/products/Headache.png";
-import pic6 from "../assets/products/Eno.png";
-import pic7 from "../assets/products/Diclofenac.png";
-import pic8 from "../assets/products/UTI.png";
-interface Offer {
-  id: string;
-  name: string;
-  image: string;
-  discount: number;
-  price: number;
-  oldPrice: number;
-}
-
-const offersData: Offer[] = [
-  { id: "1", name: "Allergy Relief", image: pic1, discount: 12, price: 350, oldPrice: 490 },
-  { id: "2", name: "La Roche-Posay Effaclar Foaming Gel", image: pic2, discount: 12, price: 830, oldPrice: 980 },
-  { id: "3", name: "Emergency Contraception", image: pic3, discount: 11, price: 1700, oldPrice: 2035 },
-  { id: "4", name: "Benyllin Cough Syrup", image: pic4, discount: 15, price: 989, oldPrice: 1075 },
-  { id: "5", name: "Paracetamol Headache Relief", image: pic5, discount: 15, price: 84, oldPrice: 95 },
-  { id: "6", name: "ENO Antacid Relief", image: pic6, discount: 11, price: 50, oldPrice: 75 },
-  { id: "7", name: "Diclofenac Pain Relief", image: pic7, discount: 15, price: 159, oldPrice: 175 },
-  { id: "8", name: "Cystex Painful Urination Relief", image: pic8, discount: 15, price: 214, oldPrice: 305 },
-];
+// Import Model functions and interface
+import { getAllProducts } from "../data/Offers";
+import type { Product } from "../data/Offers";
 
 const WHATSAPP_NUMBER = "254796787207";
 const WHATSAPP_MESSAGE = encodeURIComponent("Hello, I'd like to order this product:");
 
-const Offers: React.FC = memo(() => {
+const ProductList: React.FC = memo(() => {
+  // Fetch data directly from the Model's Controller-like function
+  const offersData: Product[] = getAllProducts(); 
+
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
-  // Navigate to product detail page
+  // Navigate to product detail page (Controller Logic)
   const handleProductClick = useCallback((productId: string) => {
-    navigate(`/product/${productId}`);
+    navigate(`/offers/${productId}`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [navigate]);
 
-  // Add to cart with event propagation control
-  const handleAddToCart = useCallback((offer: Offer, event: React.MouseEvent) => {
+  // Add to cart (Controller Logic)
+  const handleAddToCart = useCallback((product: Product, event: React.MouseEvent) => {
     event.stopPropagation();
     addToCart({
-      id: offer.id,
-      name: offer.name,
-      price: offer.price,
-      image: offer.image,
+      id: product.id,
+      name: product.title, // Using 'title' from Product interface
+      price: product.discountedPrice, // Using 'discountedPrice'
+      image: product.image,
       quantity: 1,
     });
-    toast.success(`${offer.name} added to cart 🛒`, { duration: 2000 });
+    toast.success(`${product.title} added to cart 🛒`, { duration: 2000 });
   }, [addToCart]);
 
-  // WhatsApp order with event propagation control
+  // WhatsApp order (Controller Logic)
   const handleWhatsAppOrder = useCallback((productName: string, event: React.MouseEvent) => {
     event.stopPropagation();
     const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}%20${encodeURIComponent(
@@ -72,7 +49,7 @@ const Offers: React.FC = memo(() => {
     window.open(whatsappLink, "_blank", "noopener,noreferrer");
   }, []);
 
-  // Quick view modal
+  // Quick view modal (Controller Logic)
   const handleImageClick = useCallback((image: string, event: React.MouseEvent) => {
     event.stopPropagation();
     setSelectedImage(image);
@@ -80,7 +57,7 @@ const Offers: React.FC = memo(() => {
 
   const closeModal = useCallback(() => setSelectedImage(null), []);
 
-  // Keyboard accessibility
+  // Keyboard accessibility helper
   const handleKeyDown = useCallback((event: React.KeyboardEvent, callback: () => void) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
@@ -88,9 +65,10 @@ const Offers: React.FC = memo(() => {
     }
   }, []);
 
+  // Rendering (View Logic)
   return (
     <section className={styles.offersSection} aria-labelledby="offers-heading">
-      {/* === Header === */}
+      {/* ... Header remains the same ... */}
       <div className={styles.header}>
         <h2 id="offers-heading" className={styles.title}>Offers</h2>
         <Link 
@@ -104,36 +82,36 @@ const Offers: React.FC = memo(() => {
 
       {/* === Offers Grid === */}
       <div className={styles.offersGrid} role="list">
-        {offersData.map((offer) => (
+        {offersData.map((product) => (
           <article 
-            key={offer.id} 
+            key={product.id} 
             className={styles.card}
             role="listitem"
-            onClick={() => handleProductClick(offer.id)}
-            onKeyDown={(e) => handleKeyDown(e, () => handleProductClick(offer.id))}
+            onClick={() => handleProductClick(product.id)}
+            onKeyDown={(e) => handleKeyDown(e, () => handleProductClick(product.id))}
             tabIndex={0}
-            aria-label={`${offer.name}, ${offer.discount}% off, now KSh ${offer.price}`}
+            aria-label={`${product.title}, ${product.discount}% off, now KSh ${product.discountedPrice}`}
           >
             {/* Discount Badge */}
             <div 
               className={styles.discountTag} 
-              aria-label={`${offer.discount} percent discount`}
+              aria-label={`${product.discount} percent discount`}
             >
-              -{offer.discount}%
+              -{product.discount}%
             </div>
 
             {/* Product Image with Quick View */}
             <div className={styles.imageWrapper}>
               <img
-                src={offer.image}
-                alt={offer.name}
+                src={product.image}
+                alt={product.title}
                 className={styles.productImage}
                 loading="lazy"
               />
               <button
                 className={styles.quickViewBtn}
-                onClick={(e) => handleImageClick(offer.image, e)}
-                aria-label={`Quick view ${offer.name} image`}
+                onClick={(e) => handleImageClick(product.image, e)}
+                aria-label={`Quick view ${product.title} image`}
                 type="button"
               >
                 <Eye size={16} aria-hidden="true" />
@@ -143,26 +121,26 @@ const Offers: React.FC = memo(() => {
 
             {/* Product Info */}
             <div className={styles.info}>
-              <h3 className={styles.name}>{offer.name}</h3>
+              <h3 className={styles.name}>{product.title}</h3>
               <div className={styles.prices}>
                 <span 
                   className={styles.newPrice} 
-                  aria-label={`Sale price ${offer.price} Kenyan shillings`}
+                  aria-label={`Sale price ${product.discountedPrice} Kenyan shillings`}
                 >
-                  KSh {offer.price.toLocaleString()}
+                  KSh {product.discountedPrice.toLocaleString()}
                 </span>
                 <span 
                   className={styles.oldPrice} 
-                  aria-label={`Original price ${offer.oldPrice} Kenyan shillings`}
+                  aria-label={`Original price ${product.originalPrice} Kenyan shillings`}
                 >
-                  KSh {offer.oldPrice.toLocaleString()}
+                  KSh {product.originalPrice.toLocaleString()}
                 </span>
               </div>
               <p 
                 className={styles.savings} 
-                aria-label={`You save ${offer.oldPrice - offer.price} Kenyan shillings`}
+                aria-label={`You save ${product.originalPrice - product.discountedPrice} Kenyan shillings`}
               >
-                Save KSh {(offer.oldPrice - offer.price).toLocaleString()}
+                Save KSh {(product.originalPrice - product.discountedPrice).toLocaleString()}
               </p>
             </div>
 
@@ -171,8 +149,8 @@ const Offers: React.FC = memo(() => {
               {/* Add to Cart Button */}
               <button
                 className={styles.addToCart}
-                onClick={(e) => handleAddToCart(offer, e)}
-                aria-label={`Add ${offer.name} to shopping cart`}
+                onClick={(e) => handleAddToCart(product, e)}
+                aria-label={`Add ${product.title} to shopping cart`}
                 type="button"
               >
                 <ShoppingCart size={18} strokeWidth={1.8} aria-hidden="true" />
@@ -182,8 +160,8 @@ const Offers: React.FC = memo(() => {
               {/* WhatsApp Order Button */}
               <button
                 className={styles.whatsappBtn}
-                onClick={(e) => handleWhatsAppOrder(offer.name, e)}
-                aria-label={`Order ${offer.name} via WhatsApp`}
+                onClick={(e) => handleWhatsAppOrder(product.title, e)}
+                aria-label={`Order ${product.title} via WhatsApp`}
                 type="button"
               >
                 <MessageCircle size={18} strokeWidth={1.8} aria-hidden="true" />
@@ -194,7 +172,7 @@ const Offers: React.FC = memo(() => {
         ))}
       </div>
 
-      {/* === Image Modal === */}
+      {/* ... Image Modal remains the same ... */}
       {selectedImage && (
         <div 
           className={styles.modalOverlay} 
@@ -228,6 +206,6 @@ const Offers: React.FC = memo(() => {
   );
 });
 
-Offers.displayName = 'Offers';
+ProductList.displayName = 'ProductList';
 
-export default Offers;
+export default ProductList;

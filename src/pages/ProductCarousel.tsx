@@ -1,68 +1,92 @@
+// ===============================================
+// 🎨 ProductCarousel.tsx - VIEW LAYER
+// Horizontal scrolling product carousel
+// Pure presentation component
+// ===============================================
+
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import styles from "./ProductCarousel.module.css";
 import { useCart } from "../context/CartContext";
 
+// Import Model (data + utilities)
+import { products, formatPrice, type Product } from "../data/HomeData";
 
-// === Import images ===
-import pic1 from "../assets/products/OneTouchSelectPlusGlucometerKit.png";
-import pic2 from "../assets/products/iProvenDigitalThermometer.png";
-import pic3 from "../assets/products/First Aid Kit Essentials (110 pcs).png";
-import pic4 from "../assets/products/Swift-Pregnancy-Test-Kit.png";
-import pic5 from "../assets/products/OmronBronzeBloodPressurMonitor.png";
-import pic6 from "../assets/products/Accu-ChekSoftclixLancets.png";
-import pic7 from "../assets/products/ElastoplastSensitivePlasters.png";
-import pic8 from "../assets/products/Vickswarmmisthumidifier.png";
-import pic9 from "../assets/products/Omronpeakflowmeter.png";
-import pic10 from "../assets/products/PurellAdvancedHandSanitizer.png";
-import pic11 from "../assets/products/Covid19Test.png";
-import pic12 from "../assets/products/ElectricHeatingPadForBack Pain.png";
-import pic13 from "../assets/products/PulseOximeter.png";
-import pic14 from "../assets/products/GelPack.png";
-import pic15 from "../assets/products/WalkingCane.png";
-
-interface Product {
-  id: number;
-  name: string;
-  description: string;
-  brand: string;
-  price: number;
-  image: string;
-  trending: boolean;
-}
+// ===============================================
+// 🎯 MAIN COMPONENT
+// ===============================================
 
 const ProductCarousel: React.FC = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const navigate = useNavigate();
 
-  // ✅ Global Cart Context
+  // Global cart context
   const { addToCart, openCart } = useCart();
 
+  // ===============================================
+  // 🎮 EVENT HANDLERS (Controller Logic)
+  // ===============================================
+
+  /**
+   * Add product to cart
+   */
   const handleAddToCart = useCallback(
-    (product: Product) => {
+    (product: Product, e: React.MouseEvent) => {
+      e.stopPropagation(); // Prevent navigation when clicking Add button
+
       const cartItem = {
         id: product.id.toString(),
         name: product.name,
         price: product.price,
         image: product.image,
         quantity: 1,
-        category: product.brand,
+        category: product.category,
         description: product.description,
-        inStock: true,
+        inStock: product.stock > 0,
       };
+
       addToCart(cartItem);
-      toast.success(`${product.name} added to cart!`, { duration: 2000 });
+      toast.success(`${product.name} added to cart!`, {
+        duration: 2000,
+        icon: "🛒",
+      });
       openCart();
     },
     [addToCart, openCart]
   );
 
-  // 💨 Scroll logic
+  /**
+   * Navigate to product details page
+   */
+  const handleViewDetails = useCallback(
+    (productId: number) => {
+      navigate(`/home-product/${productId}`);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    [navigate]
+  );
+
+  /**
+   * Handle card click (navigate to details)
+   */
+  const handleCardClick = useCallback(
+    (productId: number) => {
+      handleViewDetails(productId);
+    },
+    [handleViewDetails]
+  );
+
+  /**
+   * Horizontal scroll control
+   */
   const scroll = useCallback((direction: "left" | "right") => {
     const container = scrollContainerRef.current;
     if (!container) return;
+
     const scrollAmount = 320;
     const newScrollLeft =
       direction === "left"
@@ -72,6 +96,9 @@ const ProductCarousel: React.FC = () => {
     container.scrollTo({ left: newScrollLeft, behavior: "smooth" });
   }, []);
 
+  /**
+   * Check scroll boundaries
+   */
   const checkScrollPosition = useCallback(() => {
     const container = scrollContainerRef.current;
     if (container) {
@@ -80,6 +107,10 @@ const ProductCarousel: React.FC = () => {
       setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
     }
   }, []);
+
+  // ===============================================
+  // 🔄 EFFECTS
+  // ===============================================
 
   useEffect(() => {
     checkScrollPosition();
@@ -95,153 +126,16 @@ const ProductCarousel: React.FC = () => {
     };
   }, [checkScrollPosition]);
 
-// 🧾 Top 15 Home Healthcare Essentials (Kenya Pricing 2025)
-// --------------------------------------------------------
-
-const products: Product[] = [
-  {
-    id: 1,
-    name: "OneTouch Select Plus Glucometer Kit",
-    description: "Accurate blood glucose monitoring kit with test strips and lancets.",
-    brand: "OneTouch",
-    price: 4500,
-    image: pic1,
-    trending: true,
-  },
-  {
-    id: 2,
-    name: "iProven Digital Thermometer",
-    description: "Fast and reliable thermometer for adults and children.",
-    brand: "iProven",
-    price: 950,
-    image: pic2,
-    trending: false,
-  },
-  {
-    id: 3,
-    name: "First Aid Kit Essentials (110 pcs)",
-    description: "Comprehensive first aid kit with bandages, scissors, and antiseptics.",
-    brand: "Johnson & Johnson",
-    price: 3200,
-    image: pic3,
-    trending: true,
-  },
-  {
-    id: 4,
-    name: "Swift Pregnancy Test Kit (Cassette)",
-    description: "Accurate early pregnancy detection kit for home use.",
-    brand: "Pharmaplus",
-    price: 250,
-    image: pic4,
-    trending: true,
-  },
-  {
-    id: 5,
-    name: "Omron Bronze Blood Pressure Monitor",
-    description: "Clinically validated BP monitor with one-touch digital operation.",
-    brand: "Omron",
-    price: 8500,
-    image: pic5,
-    trending: true,
-  },
-  {
-    id: 6,
-    name: "Accu-Chek Softclix Lancets (100s)",
-    description: "Gentle, precise lancets for blood glucose testing.",
-    brand: "Accu-Chek",
-    price: 1800,
-    image: pic6,
-    trending: false,
-  },
-  {
-    id: 7,
-    name: "Elastoplast Sensitive Plasters (20s)",
-    description: "Hypoallergenic plasters ideal for sensitive skin.",
-    brand: "Elastoplast",
-    price: 600,
-    image: pic7,
-    trending: false,
-  },
-  {
-    id: 8,
-    name: "Vicks Warm Mist Humidifier",
-    description: "Adds moisture and relieves dry throat and nasal irritation.",
-    brand: "Vicks",
-    price: 9500,
-    image: pic8,
-    trending: true,
-  },
-  {
-    id: 9,
-    name: "Omron Peak Flow Meter",
-    description: "Monitors lung function for asthma and respiratory care.",
-    brand: "Omron",
-    price: 4200,
-    image: pic9,
-    trending: false,
-  },
-  {
-    id: 10,
-    name: "Purell Advanced Hand Sanitizer (500ml)",
-    description: "Kills 99.9% of germs instantly while keeping hands moisturized.",
-    brand: "Purell",
-    price: 650,
-    image: pic10,
-    trending: false,
-  },
-  {
-    id: 11,
-    name: "COVID-19 Rapid Antigen Test Kit",
-    description: "Approved rapid test for accurate COVID-19 detection.",
-    brand: "Abbott",
-    price: 1200,
-    image: pic11,
-    trending: true,
-  },
-  {
-    id: 12,
-    name: "Electric Heating Pad for Back Pain",
-    description: "Adjustable heat therapy pad for muscle and joint pain.",
-    brand: "Sunbeam",
-    price: 3800,
-    image: pic12,
-    trending: false,
-  },
-  {
-    id: 13,
-    name: "Pulse Oximeter Fingertip",
-    description: "Instant oxygen saturation and pulse rate monitor.",
-    brand: "Contec",
-    price: 2500,
-    image: pic13,
-    trending: true,
-  },
-  {
-    id: 14,
-    name: "Reusable Hot & Cold Gel Pack",
-    description: "Flexible, reusable gel pack for pain and swelling relief.",
-    brand: "TheraPearl",
-    price: 950,
-    image: pic14,
-    trending: false,
-  },
-  {
-    id: 15,
-    name: "Medline Adjustable Walking Cane",
-    description: "Lightweight aluminum cane for improved balance and mobility.",
-    brand: "Medline",
-    price: 4800,
-    image: pic15,
-    trending: false,
-  },
-];
-
+  // ===============================================
+  // 🎨 RENDER (View)
+  // ===============================================
 
   return (
     <section className={styles.carouselSection}>
       <div className={styles.container}>
+        {/* Header with navigation arrows */}
         <div className={styles.header}>
-          <h2 className={styles.title}>Home Healthcare</h2>
+          <h2 className={styles.title}>Home Healthcare Essentials</h2>
           <div className={styles.navigation}>
             <button
               className={`${styles.navButton} ${!canScrollLeft ? styles.disabled : ""}`}
@@ -262,19 +156,38 @@ const products: Product[] = [
           </div>
         </div>
 
+        {/* Product carousel */}
         <div className={styles.carouselWrapper}>
           <div className={styles.carousel} ref={scrollContainerRef}>
             {products.map((product) => (
               <motion.article
                 key={product.id}
                 className={styles.productCard}
+                onClick={() => handleCardClick(product.id)}
                 whileHover={{ y: -4 }}
                 transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                role="button"
+                tabIndex={0}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") handleCardClick(product.id);
+                }}
               >
+                {/* Card header with badges */}
                 <div className={styles.cardHeader}>
-                  {product.trending && <span className={styles.trendingBadge}>🔥 Trending</span>}
+                  {product.trending && (
+                    <span className={styles.trendingBadge}>🔥 Trending</span>
+                  )}
+                  {product.stock <= 50 && product.stock > 0 && (
+                    <span className={styles.lowStockBadge}>
+                      Only {product.stock} left
+                    </span>
+                  )}
+                  {product.stock === 0 && (
+                    <span className={styles.outOfStockBadge}>Out of Stock</span>
+                  )}
                 </div>
 
+                {/* Product image */}
                 <div className={styles.imageWrapper}>
                   <img
                     src={product.image}
@@ -284,26 +197,37 @@ const products: Product[] = [
                   />
                 </div>
 
+                {/* Product information */}
                 <div className={styles.cardBody}>
+                  <span className={styles.productCategory}>{product.category}</span>
                   <h3 className={styles.productName}>{product.name}</h3>
-                  <p className={styles.productDescription}>{product.description}</p>
+                  <p className={styles.productDescription}>
+                    {product.description}
+                  </p>
                   <p className={styles.productBrand}>{product.brand}</p>
-                  <p className={styles.productPrice}>KES {product.price.toFixed(2)}</p>
+                  <p className={styles.productPrice}>{formatPrice(product.price)}</p>
                 </div>
 
+                {/* Action buttons */}
                 <div className={styles.cardFooter}>
                   <button
-                    className={styles.addButton}
-                    onClick={() => handleAddToCart(product)}
+                    className={`${styles.addButton} ${
+                      product.stock === 0 ? styles.disabledButton : ""
+                    }`}
+                    onClick={(e) => handleAddToCart(product, e)}
+                    disabled={product.stock === 0}
                     aria-label={`Add ${product.name} to cart`}
                   >
-                    🛒 Add
+                    {product.stock === 0 ? "Out of Stock" : "🛒 Add to Cart"}
                   </button>
                   <button
                     className={styles.detailsButton}
-                    onClick={() => toast("Feature coming soon!")}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleViewDetails(product.id);
+                    }}
                   >
-                    View Details
+                    View Details →
                   </button>
                 </div>
               </motion.article>
@@ -311,8 +235,16 @@ const products: Product[] = [
           </div>
         </div>
 
+        {/* View all link */}
         <div className={styles.viewAll}>
-          <a href="#" className={styles.viewAllLink}>
+          <a
+            href="#"
+            className={styles.viewAllLink}
+            onClick={(e) => {
+              e.preventDefault();
+              toast("Full catalog coming soon!", { icon: "📦" });
+            }}
+          >
             View All Home Healthcare Products →
           </a>
         </div>

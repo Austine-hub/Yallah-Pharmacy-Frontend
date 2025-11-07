@@ -1,10 +1,10 @@
-/// ===============================================================
-// ✅ BestSellers.tsx — Modern, Responsive, Type-Safe (2025 Optimized)
+// ===============================================================
+// ✅ BestSellers.tsx — Optimized, Clickable, MVC-Aligned (2025 Version)
 // ===============================================================
 
 import React, { useState, useRef } from "react";
-import { motion } from "framer-motion";
-import type { Variants } from "framer-motion";
+import { Link } from "react-router-dom";
+import { motion, type Variants } from "framer-motion";
 import {
   Heart,
   ShoppingCart,
@@ -17,37 +17,8 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import styles from "./BestSellers.module.css";
 
-// === Import images ===
-import pic1 from "../assets/products/Durex-Fetherlite-Condoms.png";
-import pic2 from "../assets/products/Always-Ultra-Thin-Pads-8s.png";
-import pic3 from "../assets/products/Swift-Pregnancy-Test-Kit.png";
-import pic4 from "../assets/products/Panadol-Extra-10s.png";
-import pic5 from "../assets/products/Strepsils-Lozenges-24s.png";
-import pic6 from "../assets/products/E45 Moisturizing-Cream-100g.png";
-import pic7 from "../assets/products/Dettol-hand-sanitizer-50ml.png";
-import pic8 from "../assets/products/Gaviscon-peppermint-liquid-200ml.png";
-import pic9 from "../assets/products/Deep-Heat-Rub-35g.png";
-import pic10 from "../assets/products/Nivea-Lip-Balm-Original-4.8g.png";
-import pic11 from "../assets/products/Vaseline-Petroleum-Jelly-100.png";
-import pic12 from "../assets/products/savlon.png";
-import pic13 from "../assets/products/centrum-energy.png";
-import pic14 from "../assets/products/ors.png";
-import pic15 from "../assets/products/clearasil.png";
-
-// ===============================================================
-// 🧩 Interfaces
-// ===============================================================
-interface Product {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  price: number;
-  image: string;
-  isTopSeller: boolean;
-  isPharma?: boolean;
-  isNonPharma?: boolean;
-}
+// === Import centralized model/data ===
+import { bestSellersData, type Product } from "../data/BestSellersData";
 
 // ===============================================================
 // 🧠 Component
@@ -57,14 +28,16 @@ const BestSellers: React.FC = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // ===============================================================
-  // ❤️ Toggle Favorites
+  // 🧩 Controller Logic
   // ===============================================================
+
+  /** Toggle product favorite */
   const toggleFavorite = (productId: string) => {
     setFavorites((prev) => {
       const updated = new Set(prev);
       if (updated.has(productId)) {
         updated.delete(productId);
-        toast("Removed from favorites ❤️‍🔥", { icon: "💔" });
+        toast("Removed from favorites 💔");
       } else {
         updated.add(productId);
         toast.success("Added to favorites ❤️");
@@ -73,37 +46,33 @@ const BestSellers: React.FC = () => {
     });
   };
 
-  // ===============================================================
-  // 🧺 Add to Cart
-  // ===============================================================
+  /** Add product to cart */
   const addToCart = (productName: string) => {
     toast.success(`${productName} added to cart!`);
   };
 
-  // ===============================================================
-  // 🔗 Share Product
-  // ===============================================================
-  const shareProduct = (productName: string) => {
+  /** Share product link */
+  const shareProduct = (productName: string, productId: string) => {
+    const productUrl = `${window.location.origin}/bestsellers/${productId}`;
+    const shareData = {
+      title: productName,
+      text: `Check out ${productName} at Healthfield Pharmacy`,
+      url: productUrl,
+    };
+
     if (navigator.share) {
-      navigator
-        .share({
-          title: productName,
-          text: `Check out ${productName} at Healthfield Pharmacy`,
-          url: window.location.href,
-        })
-        .catch(() => toast.error("Failed to share"));
+      navigator.share(shareData).catch(() => toast.error("Failed to share"));
     } else {
-      navigator.clipboard.writeText(window.location.href);
+      navigator.clipboard.writeText(productUrl);
       toast.success("Link copied to clipboard!");
     }
   };
 
-  // ===============================================================
-  // ↔️ Scroll Controls
-  // ===============================================================
+  /** Smooth horizontal scroll */
   const scroll = (direction: "left" | "right") => {
     const container = scrollContainerRef.current;
     if (!container) return;
+
     const scrollAmount = 320;
     container.scrollTo({
       left:
@@ -115,7 +84,7 @@ const BestSellers: React.FC = () => {
   };
 
   // ===============================================================
-  // ✨ Animation Variants (Type-Safe)
+  // ✨ Framer Motion Variants
   // ===============================================================
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -135,175 +104,10 @@ const BestSellers: React.FC = () => {
   };
 
   // ===============================================================
-  // 🧴 Product Data
-  // ===============================================================
-  const products: Product[] = [
-    {
-      id: "1",
-      name: "Durex Fetherlite Condoms 3s",
-      category: "Non-Pharma",
-      description: "Ultra-thin condoms designed for comfort and protection.",
-      price: 650,
-      image: pic1,
-      isTopSeller: true,
-      isNonPharma: true,
-    },
-    {
-      id: "2",
-      name: "Always Ultra Thin Pads 8s",
-      category: "Non-Pharma",
-      description:
-        "Super absorbent sanitary pads with odor-neutralizing technology.",
-      price: 380,
-      image: pic2,
-      isTopSeller: true,
-      isNonPharma: true,
-    },
-    {
-      id: "3",
-      name: "Swift Pregnancy Test Kit",
-      category: "Non-Pharma",
-      description: "Quick and accurate pregnancy test for early detection.",
-      price: 300,
-      image: pic3,
-      isTopSeller: true,
-      isNonPharma: true,
-    },
-    {
-      id: "4",
-      name: "Panadol Extra 10s",
-      category: "Pharma",
-      description:
-        "Effective pain and headache relief with caffeine boost.",
-      price: 150,
-      image: pic4,
-      isTopSeller: true,
-      isPharma: true,
-    },
-    {
-      id: "5",
-      name: "Strepsils Lozenges 24s",
-      category: "Pharma",
-      description:
-        "Soothing relief for sore throats and mouth irritation.",
-      price: 420,
-      image: pic5,
-      isTopSeller: true,
-      isPharma: true,
-    },
-    {
-      id: "6",
-      name: "E45 Moisturizing Cream 100g",
-      category: "Non-Pharma",
-      description:
-        "Dermatologically tested cream for dry and sensitive skin.",
-      price: 950,
-      image: pic6,
-      isTopSeller: true,
-      isNonPharma: true,
-    },
-    {
-      id: "7",
-      name: "Dettol Hand Sanitizer 50ml",
-      category: "Non-Pharma",
-      description: "Kills 99.9% of germs, perfect for on-the-go hygiene.",
-      price: 250,
-      image: pic7,
-      isTopSeller: true,
-      isNonPharma: true,
-    },
-    {
-      id: "8",
-      name: pic8,
-      category: "Pharma",
-      description: "Fast-acting relief for acid reflux and heartburn.",
-      price: 720,
-      image: "/images/gaviscon.jpg",
-      isTopSeller: true,
-      isPharma: true,
-    },
-    {
-      id: "9",
-      name: "Deep Heat Rub 35g",
-      category: "Pharma",
-      description:
-        "Muscle pain relief cream for active individuals and athletes.",
-      price: 550,
-      image: pic9,
-      isTopSeller: true,
-      isPharma: true,
-    },
-    {
-      id: "10",
-      name: "Nivea Lip Balm Original 4.8g",
-      category: "Non-Pharma",
-      description: "Moisturizing lip balm for smooth and hydrated lips.",
-      price: 280,
-      image: pic10,
-      isTopSeller: true,
-      isNonPharma: true,
-    },
-    {
-      id: "11",
-      name: "Vaseline Petroleum Jelly 100ml",
-      category: "Non-Pharma",
-      description: "Multipurpose skin protectant for dry skin and minor cuts.",
-      price: 300,
-      image: pic11,
-      isTopSeller: true,
-      isNonPharma: true,
-    },
-    {
-      id: "12",
-      name: "Savlon Antiseptic Liquid 200ml",
-      category: "Pharma",
-      description: "Trusted antiseptic for cuts, grazes, and personal hygiene.",
-      price: 400,
-      image: pic12,
-      isTopSeller: true,
-      isPharma: true,
-    },
-    {
-      id: "13",
-      name: "Centrum Energy Multivitamins 30s",
-      category: "Pharma",
-      description:
-        "Daily multivitamin for immune support and energy metabolism.",
-      price: 1200,
-      image: pic13,
-      isTopSeller: true,
-      isPharma: true,
-    },
-    {
-      id: "14",
-      name: "ORS Rehydration Salts 10s",
-      category: "Pharma",
-      description: "Essential salts to restore hydration and electrolytes.",
-      price: 180,
-      image: pic14,
-      isTopSeller: true,
-      isPharma: true,
-    },
-    {
-      id: "15",
-      name: "Clearasil Daily Face Wash 150ml",
-      category: "Non-Pharma",
-      description: "Gentle cleanser to prevent acne and keep skin fresh.",
-      price: 850,
-      image: pic15,
-      isTopSeller: true,
-      isNonPharma: true,
-    },
-  ];
-
-  // ===============================================================
-  // 🧩 JSX Layout
+  // 🧩 Render
   // ===============================================================
   return (
-    <section
-      className={styles.bestSellers}
-      aria-labelledby="bestsellers-heading"
-    >
+    <section className={styles.bestSellers} aria-labelledby="bestsellers-heading">
       <div className={styles.container}>
         {/* ===== Header ===== */}
         <div className={styles.header}>
@@ -337,7 +141,7 @@ const BestSellers: React.FC = () => {
           animate="visible"
           ref={scrollContainerRef}
         >
-          {products.map((product) => (
+          {bestSellersData.map((product: Product) => (
             <motion.article
               key={product.id}
               className={styles.productCard}
@@ -357,8 +161,11 @@ const BestSellers: React.FC = () => {
                 </motion.div>
               )}
 
-              {/* 🖼️ Product Image */}
-              <div className={styles.imageContainer}>
+              {/* 🖼️ Product Image (Clickable) */}
+              <Link
+                to={`/bestsellers/${product.id}`}
+                className={styles.imageContainer}
+              >
                 <LazyLoadImage
                   src={product.image}
                   alt={product.name}
@@ -366,38 +173,41 @@ const BestSellers: React.FC = () => {
                   className={styles.productImage}
                   wrapperClassName={styles.imageWrapper}
                 />
+              </Link>
 
-                <motion.button
-                  className={`${styles.iconButton} ${styles.favoriteButton}`}
-                  onClick={() => toggleFavorite(product.id)}
-                  whileTap={{ scale: 0.9 }}
-                  aria-label={
-                    favorites.has(product.id)
-                      ? "Remove from favorites"
-                      : "Add to favorites"
-                  }
-                >
-                  <Heart
-                    size={20}
-                    fill={favorites.has(product.id) ? "#e53e3e" : "none"}
-                    color={favorites.has(product.id) ? "#e53e3e" : "#718096"}
-                  />
-                </motion.button>
+              {/* ❤️ Favorite */}
+              <motion.button
+                className={`${styles.iconButton} ${styles.favoriteButton}`}
+                onClick={() => toggleFavorite(product.id)}
+                whileTap={{ scale: 0.9 }}
+                aria-label={
+                  favorites.has(product.id)
+                    ? "Remove from favorites"
+                    : "Add to favorites"
+                }
+              >
+                <Heart
+                  size={20}
+                  fill={favorites.has(product.id) ? "#e53e3e" : "none"}
+                  color={favorites.has(product.id) ? "#e53e3e" : "#718096"}
+                />
+              </motion.button>
 
-                <motion.button
-                  className={`${styles.iconButton} ${styles.shareButton}`}
-                  onClick={() => shareProduct(product.name)}
-                  whileTap={{ scale: 0.9 }}
-                  aria-label="Share product"
-                >
-                  <Share2 size={20} />
-                </motion.button>
-              </div>
+              {/* 🔗 Share */}
+              <motion.button
+                className={`${styles.iconButton} ${styles.shareButton}`}
+                onClick={() => shareProduct(product.name, product.id)}
+                whileTap={{ scale: 0.9 }}
+                aria-label="Share product"
+              >
+                <Share2 size={20} />
+              </motion.button>
 
               {/* 📄 Product Info */}
               <div className={styles.productInfo}>
                 <h3 className={styles.productName}>{product.name}</h3>
 
+                {/* Category Badge */}
                 <div className={styles.categoryBadge}>
                   {product.isPharma && (
                     <span className={`${styles.badge} ${styles.pharmaBadge}`}>
@@ -405,24 +215,22 @@ const BestSellers: React.FC = () => {
                     </span>
                   )}
                   {product.isNonPharma && (
-                    <span
-                      className={`${styles.badge} ${styles.nonPharmaBadge}`}
-                    >
+                    <span className={`${styles.badge} ${styles.nonPharmaBadge}`}>
                       Non-Pharma
                     </span>
                   )}
                 </div>
 
-                <p className={styles.productDescription}>
-                  {product.description}
-                </p>
+                <p className={styles.productDescription}>{product.description}</p>
 
+                {/* 💰 Price */}
                 <div className={styles.priceContainer}>
                   <span className={styles.price}>
                     Kes. {product.price.toFixed(2)}
                   </span>
                 </div>
 
+                {/* 🛒 Action Buttons */}
                 <div className={styles.actionButtons}>
                   <motion.button
                     className={styles.addButton}
@@ -434,13 +242,15 @@ const BestSellers: React.FC = () => {
                     Add
                   </motion.button>
 
-                  <motion.button
-                    className={styles.detailsButton}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    View Details
-                  </motion.button>
+                  <Link to={`/bestsellers/${product.id}`}>
+                    <motion.button
+                      className={styles.detailsButton}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      View Details
+                    </motion.button>
+                  </Link>
                 </div>
               </div>
             </motion.article>

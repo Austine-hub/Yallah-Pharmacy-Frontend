@@ -1,4 +1,5 @@
 // src/data/ShopData.ts
+
 // 🖼️ Import product images
 import pic1 from "../assets/shop2/Personal & Lifestyle Section/2025-1oothpaste & Oral Care.png";
 import pic2 from "../assets/shop2/Personal & Lifestyle Section/Skincare.png";
@@ -16,10 +17,11 @@ import pic13 from "../assets/shop2/General/Vitamin C & Zinc.png";
 import pic14 from "../assets/shop2/General/Rehydration Solutions.png";
 
 
+
 /* =====================================================
-   🧩 Interfaces
+    🧩 Model: Product Interface (Data Structure)
 ===================================================== */
-export interface ShopProduct {
+export interface Product {
   id: string;
   title: string;
   image: string;
@@ -41,9 +43,9 @@ export interface ShopProduct {
 }
 
 /* =====================================================
-   🧾 Product Data (Centralized)
+    🧾 Model: Product Data (Source of Truth)
 ===================================================== */
-export const shopProducts: ShopProduct[] = [
+const productsData: Product[] = [
   {
     id: "1",
     title: "Oral Care Pack",
@@ -308,22 +310,33 @@ export const shopProducts: ShopProduct[] = [
 ];
 
 /* =====================================================
-   🧮 Helper Functions
+    ⚙️ Controller-like Helper Functions (Data Access Logic)
 ===================================================== */
-export const getProductById = (id: string): ShopProduct | undefined => {
-  return shopProducts.find((p) => p.id === id);
+
+/** Returns all products. */
+export const getAllProducts = (): Product[] => {
+  return productsData;
 };
 
-export const getSimilarProducts = (id: string): ShopProduct[] => {
+/** Finds a product by its ID. */
+export const getProductById = (id: string): Product | undefined => {
+  return productsData.find((p) => p.id === id);
+};
+
+/** Finds products with the same category, excluding the current one. */
+export const getSimilarProducts = (id: string): Product[] => {
   const current = getProductById(id);
   if (!current) return [];
-  return shopProducts.filter(
+  // Return up to 4 similar products to keep the list manageable
+  return productsData.filter(
     (p) => p.category === current.category && p.id !== current.id
-  );
+  ).slice(0, 4); 
 };
 
+/** Formats a number as KES currency. */
 export const formatPrice = (price: number): string =>
   price.toLocaleString("en-KE", { style: "currency", currency: "KES" });
 
+/** Calculates the saving amount. */
 export const calculateSavings = (original: number, discounted: number): number =>
   Math.max(0, original - discounted);

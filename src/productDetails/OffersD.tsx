@@ -1,13 +1,14 @@
-// src/productDetails/OffersD.tsx
+// src/productDetails/OffersDetails.tsx
 import React, { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { ShoppingCart, MessageCircle, Package } from "lucide-react";
 import toast from "react-hot-toast";
-import { getProductById, getSimilarProducts } from "../data/ShopData";
+// Import Model functions: this is the key MVC separation
+import { getProductById, getSimilarProducts } from "../data/Offers"; 
 import { useCart } from "../context/CartContext";
-import styles from "./ShopD.module.css";
+import styles from "./ShopD.module.css"; // Assuming this still points to your CSS
 
-const ShopDetails: React.FC = () => {
+const OffersD: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addToCart } = useCart();
@@ -15,6 +16,7 @@ const ShopDetails: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"description" | "reviews">("description");
   const [quantity, setQuantity] = useState(1);
 
+  // Fetch data using the Model's encapsulated logic
   const product = id ? getProductById(id) : undefined;
   const similarProducts = id ? getSimilarProducts(id) : [];
 
@@ -28,6 +30,7 @@ const ShopDetails: React.FC = () => {
       </div>
     );
 
+  // Controller Logic
   const handleAddToCart = () => {
     addToCart({
       id: product.id,
@@ -39,6 +42,7 @@ const ShopDetails: React.FC = () => {
     toast.success(`${quantity} × ${product.title} added to cart!`);
   };
 
+  // Rendering (View Logic)
   return (
     <div className={styles.container}>
       {/* Breadcrumb */}
@@ -162,4 +166,4 @@ const ShopDetails: React.FC = () => {
   );
 };
 
-export default ShopDetails;
+export default OffersD;

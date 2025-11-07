@@ -1,3 +1,5 @@
+// src/data/Offers.ts (The Model)
+
 // === Import images ===
 import pic1 from "../assets/products/Allergy.png";
 import pic2 from "../assets/products/Anthelios.png";
@@ -7,6 +9,11 @@ import pic5 from "../assets/products/Headache.png";
 import pic6 from "../assets/products/Eno.png";
 import pic7 from "../assets/products/Diclofenac.png";
 import pic8 from "../assets/products/UTI.png";
+
+/**
+ * @interface Product
+ * Defines the structure of the product data (The Model's central data structure).
+ */
 export interface Product {
   id: string;
   category: string;
@@ -25,11 +32,13 @@ export interface Product {
   fullDescription?: string;
   howToUse?: string;
   ingredients?: string[];
+  // Used to link related products
   similarProducts: string[];
 }
 
-// === Products Data (Medical/Pharmacy themed) ===
+// === Central Products Data (Source of Truth) ===
 export const productsData: Product[] = [
+  // Keeping the original data, but ensuring the structure matches the interface
   {
     id: "1",
     category: "Allergy Relief",
@@ -209,7 +218,7 @@ export const productsData: Product[] = [
   },
 ];
 
-// === Helper Functions ===
+// === Controller-like Helper Functions (The Model's Interface) ===
 
 /**
  * Get a single product by its ID
@@ -221,107 +230,29 @@ export const getProductById = (id: string): Product | undefined => {
 };
 
 /**
- * Get similar products based on a product's similarProducts array
+ * Get all similar products based on a product's similarProducts array
  * @param productId - ID of the product to find similar items for
- * @param limit - Maximum number of similar products to return (optional)
  * @returns Array of similar Product objects
  */
-export const getSimilarProducts = (productId: string, limit?: number): Product[] => {
+export const getSimilarProducts = (productId: string): Product[] => {
   const product = getProductById(productId);
   if (!product) return [];
   
+  // Maps the similarProduct IDs to actual Product objects and filters out any undefined results
   const similarProducts = product.similarProducts
     .map((id) => getProductById(id))
     .filter((p): p is Product => p !== undefined);
   
-  return limit ? similarProducts.slice(0, limit) : similarProducts;
+  return similarProducts;
 };
 
 /**
- * Get products by category
- * @param category - Category name to filter by
- * @returns Array of products in the specified category
- */
-export const getProductsByCategory = (category: string): Product[] => {
-  return productsData.filter(
-    (product) => product.category.toLowerCase() === category.toLowerCase()
-  );
-};
-
-/**
- * Get all unique categories
- * @returns Array of unique category names
- */
-export const getAllCategories = (): string[] => {
-  return Array.from(new Set(productsData.map((product) => product.category)));
-};
-
-/**
- * Search products by title, description, or category
- * @param query - Search query string
- * @returns Array of matching products
- */
-export const searchProducts = (query: string): Product[] => {
-  const lowerQuery = query.toLowerCase();
-  return productsData.filter(
-    (product) =>
-      product.title.toLowerCase().includes(lowerQuery) ||
-      product.description.toLowerCase().includes(lowerQuery) ||
-      product.category.toLowerCase().includes(lowerQuery)
-  );
-};
-
-/**
- * Get products within a price range
- * @param minPrice - Minimum price (inclusive)
- * @param maxPrice - Maximum price (inclusive)
- * @returns Array of products within the price range
- */
-export const getProductsByPriceRange = (
-  minPrice: number,
-  maxPrice: number
-): Product[] => {
-  return productsData.filter(
-    (product) =>
-      product.discountedPrice >= minPrice &&
-      product.discountedPrice <= maxPrice
-  );
-};
-
-/**
- * Get products that are in stock
- * @returns Array of in-stock products
- */
-export const getInStockProducts = (): Product[] => {
-  return productsData.filter((product) => product.stock > 0);
-};
-
-/**
- * Get featured products (highest discounts)
- * @param limit - Number of products to return
- * @returns Array of featured products sorted by discount
- */
-export const getFeaturedProducts = (limit: number = 4): Product[] => {
-  return [...productsData]
-    .sort((a, b) => b.discount - a.discount)
-    .slice(0, limit);
-};
-
-/**
- * Get products by group
- * @param group - Group name to filter by
- * @returns Array of products in the specified group
- */
-export const getProductsByGroup = (group: string): Product[] => {
-  return productsData.filter(
-    (product) => product.group.toLowerCase() === group.toLowerCase()
-  );
-};
-
-/**
- * Get all products
+ * Get all products (Used for the main list/shop view)
  * @returns Complete array of all products
  */
 export const getAllProducts = (): Product[] => {
   return productsData;
 };
+
+// Removed other functions (search, filter, etc.) for brevity, 
+// keeping only the ones used in the UI files.

@@ -1,4 +1,6 @@
 // src/productDetails/ShopDetails.tsx
+
+
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { ShoppingCart, MessageCircle, Package, Heart, Share2, ArrowLeft } from "lucide-react";
@@ -8,14 +10,14 @@ import {
   getSimilarProducts,
   formatPrice,
   calculateSavings,
-} from "../data/ShopData";
+} from "../data/ShopData"; // Unified import from the Model file
 import { useCart } from "../context/CartContext";
 import styles from "./Offers1D.module.css";
 
 /**
  * 🛍️ ShopDetails Component
  * Displays detailed information for a selected product
- * Uses centralized data from src/data/ShopData.ts
+ * Consumes data via Controller-like functions from src/data/productModel.ts
  */
 const ShopDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,7 +28,7 @@ const ShopDetails: React.FC = () => {
   const [quantity, setQuantity] = useState<number>(1);
   const [isWishlisted, setIsWishlisted] = useState<boolean>(false);
 
-  // Fetch product data
+  // 1. **Controller Logic:** Fetch product data via Model functions
   const product = id ? getProductById(id) : undefined;
   const similarProducts = id ? getSimilarProducts(id) : [];
 
@@ -40,7 +42,8 @@ const ShopDetails: React.FC = () => {
   const handleQuantityChange = useCallback(
     (newQuantity: number) => {
       if (!product) return;
-      const validQuantity = Math.max(1, Math.min(product.stock, newQuantity));
+      // Ensure quantity is within valid range: 1 to product.stock
+      const validQuantity = Math.max(1, Math.min(product.stock, newQuantity)); 
       setQuantity(validQuantity);
       if (newQuantity > product.stock) {
         toast.error(`Only ${product.stock} units available`);
@@ -60,7 +63,7 @@ const ShopDetails: React.FC = () => {
     addToCart({
       id: product.id,
       name: product.title,
-      price: product.discountedPrice || product.price,
+      price: product.discountedPrice, // Ensure we use the discounted price
       image: product.image,
       quantity,
     });
@@ -68,18 +71,16 @@ const ShopDetails: React.FC = () => {
     toast.success(`✅ ${quantity} × ${product.title} added to cart!`);
   }, [product, quantity, addToCart]);
 
-  /** 💬 Chat Button */
+  // ... (Other handlers like handleChatClick, handleWishlistToggle, handleShare, etc. remain the same) ...
   const handleChatClick = useCallback(() => {
-    toast("💬 Chat feature coming soon!"); // ✅ FIXED: replaced toast.info() with toast()
+    toast("💬 Chat feature coming soon!");
   }, []);
 
-  /** ❤️ Wishlist Toggle */
   const handleWishlistToggle = useCallback(() => {
     setIsWishlisted((prev) => !prev);
     toast.success(isWishlisted ? "Removed from wishlist" : "❤️ Added to wishlist!");
   }, [isWishlisted]);
 
-  /** 🔗 Share Button */
   const handleShare = useCallback(() => {
     if (navigator.share && product) {
       navigator
@@ -95,13 +96,11 @@ const ShopDetails: React.FC = () => {
     }
   }, [product]);
 
-  /** 🧭 Scroll to Alternatives */
   const handleViewAlternatives = useCallback(() => {
     const section = document.getElementById("similar-products");
     section?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
-  /** 🔄 Navigate to Similar Product */
   const handleSimilarProductClick = useCallback(
     (productId: string) => {
       navigate(`/product/${productId}`);
@@ -115,24 +114,21 @@ const ShopDetails: React.FC = () => {
       <div className={styles.notFound}>
         <h2>Product Not Found</h2>
         <p>Sorry, the product you're looking for doesn’t exist.</p>
-        <button onClick={() => navigate("/")} className={styles.backBtn}>
-          <ArrowLeft size={20} /> Return to Home
+        <button onClick={() => navigate("/shop")} className={styles.backBtn}>
+          <ArrowLeft size={20} /> Return to Shop
         </button>
       </div>
     );
   }
 
   return (
+    // 2. **View Logic:** Render the product details
     <div className={styles.container}>
       {/* Breadcrumb */}
       <nav className={styles.breadcrumbs} aria-label="Breadcrumb">
-        <Link to="/" className={styles.breadcrumbLink}>
-          Home
-        </Link>
+        <Link to="/" className={styles.breadcrumbLink}>Home</Link>
         <span className={styles.separator}>/</span>
-        <Link to="/shop" className={styles.breadcrumbLink}>
-          Shop
-        </Link>
+        <Link to="/shop" className={styles.breadcrumbLink}>Shop</Link>
         <span className={styles.separator}>/</span>
         <span className={styles.breadcrumbCurrent}>{product.title}</span>
       </nav>

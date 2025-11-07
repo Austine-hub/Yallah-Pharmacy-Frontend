@@ -1,236 +1,434 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { 
-    getProductBySlug, 
-    getRelatedProducts,
-    formatPrice, 
-    calculateSavings
-} from '../data/SkinData'; // normal imports for functions/values
+// ===============================================================
+// Skin.tsx — Skincare Products List View / Controller
+// ===============================================================
 
-import type { SkinProduct } from '../data/SkinData'; // type-only import
+import React, { useState, useMemo, useCallback, memo} from "react";
+import { Link } from "react-router-dom";
+import { ShoppingCart, Search, Filter, X, Star } from "lucide-react";
+import toast from "react-hot-toast";
+import { useCart } from "../context/CartContext";
 
-import styles from './Offers.module.css';
+import {
+  skinProducts,
+  formatPrice,
+  searchProducts,
+  sortProducts,
+  type SkinProduct,
+  type ProductCategory,
+  type SortOption,
+} from "../data/SkinData";
 
-// Placeholder component for related products (you'd need to create this)
-const RelatedProductCard: React.FC<{ product: SkinProduct }> = ({ product }) => (
-    <div className={styles.relatedCard}>
-        <img src={product.image} alt={product.name} className={styles.relatedImage} />
-        <h4 className={styles.relatedName}>{product.name}</h4>
-        <p className={styles.relatedPrice}>{formatPrice(product.price)}</p>
-    </div>
+import styles from "./Offers.module.css";
+
+// ===============================================================
+// Types
+// ===============================================================
+interface FilterState {
+  category: ProductCategory | "all";
+  priceRange: [number, number];
+  inStock: boolean | null;
+}
+
+// ===============================================================
+// ProductCard Component — Memoized for performance
+// ===============================================================
+const ProductCard = memo(
+  ({
+    product,
+    onAddToCart,
+    onImageClick,
+  }: {
+    product: SkinProduct;
+    onAddToCart: (product: SkinProduct) => void;
+    onImageClick: (image: string) => void;
+  }) => {
+    return (
+      <article className={styles.card} aria-labelledby={`product-${product.id}`}>
+        {product.discount > 0 && (
+          <div
+            className={styles.discountTag}
+            aria-label={`${product.discount}% discount`}
+          >
+            -{product.discount}%
+          </div>
+        )}
+
+        <div className={styles.imageWrapper}>
+          <img
+            src={product.image}
+            alt={product.name}
+            className={styles.productImage}
+            loading="lazy"
+            onClick={() => onImageClick(product.image)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) =>
+              e.key === "Enter" && onImageClick(product.image)
+            }
+          />
+          <button
+            className={styles.quickViewBtn}
+            onClick={() => onImageClick(product.image)}
+            aria-label={`Quick view ${product.name}`}
+          >
+            Quick View
+          </button>
+        </div>
+
+        <div className={styles.info}>
+          <h3 id={`product-${product.id}`} className={styles.name}>
+            <Link to={`/skin/${product.id}`} className={styles.productLink}>
+              {product.name}
+            </Link>
+          </h3>
+
+          {product.rating && (
+            <div
+              className={styles.rating}
+              aria-label={`Rating: ${product.rating} out of 5 stars`}
+            >
+              <Star size={14} fill="currentColor" className={styles.starIcon} />
+              <span>{product.rating}</span>
+              {product.reviewCount && (
+                <span className={styles.reviewCount}>
+                  ({product.reviewCount})
+                </span>
+              )}
+            </div>
+          )}
+
+          <div className={styles.prices}>
+            <span
+              className={styles.newPrice}
+              aria-label={`Current price ${formatPrice(product.price)}`}
+            >
+              {formatPrice(product.price)}
+            </span>
+            {product.discount > 0 && (
+              <span
+                className={styles.oldPrice}
+                aria-label={`Original price ${formatPrice(product.oldPrice)}`}
+              >
+                {formatPrice(product.oldPrice)}
+              </span>
+            )}
+          </div>
+
+          <div className={styles.stockStatus}>
+            <span
+              className={
+                product.inStock ? styles.inStock : styles.outOfStock
+              }
+            >
+              {product.inStock ? "✓ In Stock" : "✕ Out of Stock"}
+            </span>
+          </div>
+        </div>
+
+        <div className={styles.actions}>
+          <Link to={`/skin/${product.id}`} className={styles.viewDetailsBtn}>
+            View Details
+          </Link>
+          <button
+            className={styles.addToCart}
+            onClick={() => onAddToCart(product)}
+            disabled={!product.inStock}
+            aria-label={`Add ${product.name} to cart`}
+          >
+            <ShoppingCart size={18} strokeWidth={1.8} />
+            <span>Add to Cart</span>
+          </button>
+        </div>
+      </article>
+    );
+  }
 );
 
+ProductCard.displayName = "ProductCard";
 
-const SkinDetails: React.FC = () => {
-    // We use 'id' in the route path, but best practice is to treat it as the slug
-    const { id: slug } = useParams<{ id: string }>();
-    const navigate = useNavigate();
-    
-    const [product, setProduct] = useState<SkinProduct | null>(null);
-    const [mainImage, setMainImage] = useState<string>('');
-    const [quantity, setQuantity] = useState<number>(1);
-    
-    // State for related products
-    const [relatedProducts, setRelatedProducts] = useState<SkinProduct[]>([]);
+// ===============================================================
+// Main Skin Component
+// ===============================================================
+const Skin: React.FC = () => {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<SortOption>("name");
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState<FilterState>({
+    category: "all",
+    priceRange: [0, 5000],
+    inStock: null,
+  });
 
-    useEffect(() => {
-        if (!slug) {
-            // Handle case where slug is missing, maybe redirect to a 404 or shop page
-            console.error("Product slug is missing.");
-            // navigate('/shop'); 
-            return;
-        }
+  const { addToCart } = useCart();
+  const MAX_PRICE = 5000;
 
-        // 1. Fetch the main product data
-        const fetchedProduct = getProductBySlug(slug);
+  // =========================================================
+  // Derived product list
+  // =========================================================
+  const filteredProducts = useMemo(() => {
+    let products = searchQuery
+      ? searchProducts(searchQuery)
+      : [...skinProducts];
 
-        if (fetchedProduct) {
-            setProduct(fetchedProduct);
-            // Initialize main image from the first image in the gallery, or the main image field
-            const initialImage = fetchedProduct.gallery?.[0] || fetchedProduct.image;
-            setMainImage(initialImage);
-            
-            // 2. Fetch related products (using ID for the utility function)
-            const related = getRelatedProducts(fetchedProduct.id);
-            setRelatedProducts(related);
-
-        } else {
-            setProduct(null);
-            // Optionally redirect if product not found
-            // navigate('/404'); 
-        }
-    }, [slug, navigate]); // Re-run effect when the slug changes
-    
-    if (!product) {
-        return <div className={styles.loading}>Product not found or still loading...</div>;
+    if (filters.category !== "all") {
+      products = products.filter((p) => p.category === filters.category);
     }
 
-    // Determine the array of images to use for the gallery/thumbnails
-    // Ensure the main 'image' is always the first if a gallery exists
-    const galleryImages = product.gallery && product.gallery.length > 0 
-        ? product.gallery 
-        : [product.image];
-
-    // --- Handlers ---
-    const handleAddToCart = () => {
-        // Implement your cart logic here (e.g., using context or Redux)
-        console.log(`Added ${quantity} x ${product.name} to cart.`);
-        // Example: dispatch(addItemToCart({ ...product, quantity }));
-    };
-
-    const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = parseInt(e.target.value);
-        if (!isNaN(value) && value >= 1) {
-            setQuantity(value);
-        }
-    };
-
-    const handleRatingClick = () => {
-        // Scroll to the review section or open a review modal
-        console.log('Navigating to reviews/rating section.');
-        // document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' });
-    };
-
-
-    return (
-        <div className={styles.skinDetailsContainer}>
-            <div className={styles.productHeader}>
-                <h1>{product.name}</h1>
-            </div>
-            
-            <div className={styles.detailsContent}>
-                
-                {/* 1. Image Gallery and Main View */}
-                <div className={styles.imageGallery}>
-                    {/* Thumbnail Navigation */}
-                    <div className={styles.thumbnails}>
-                        {galleryImages.map((imgSrc, index) => (
-                            <img 
-                                key={index}
-                                src={imgSrc}
-                                alt={`View ${index + 1}`}
-                                className={`${styles.thumbnail} ${mainImage === imgSrc ? styles.activeThumbnail : ''}`}
-                                onClick={() => setMainImage(imgSrc)}
-                            />
-                        ))}
-                    </div>
-                    
-                    {/* Main Image */}
-                    <div className={styles.mainImageWrapper}>
-                        <img src={mainImage} alt={product.name} className={styles.mainImage} />
-                    </div>
-                </div>
-
-                {/* 2. Product Information and Purchase */}
-                <div className={styles.productInfo}>
-                    <p className={styles.productDescription}>{product.description}</p>
-
-                    <div className={styles.ratingInfo} onClick={handleRatingClick}>
-                        {/* You would use an icon library here (e.g., Font Awesome) */}
-                        <span className={styles.starRating}>
-                            {'★'.repeat(Math.round(product.rating || 0))}
-                            {'☆'.repeat(5 - Math.round(product.rating || 0))}
-                        </span>
-                        <span className={styles.reviewCount}>({product.reviewCount} Reviews)</span>
-                    </div>
-
-                    <div className={styles.priceSection}>
-                        <span className={styles.currentPrice}>{formatPrice(product.price)}</span>
-                        {product.discount > 0 && (
-                            <>
-                                <span className={styles.oldPrice}>{formatPrice(product.oldPrice)}</span>
-                                <span className={styles.discountBadge}>
-                                    {product.discount}% OFF
-                                </span>
-                            </>
-                        )}
-                        {product.discount > 0 && (
-                             <p className={styles.savings}>
-                                You save {formatPrice(calculateSavings(product.oldPrice, product.price))}!
-                            </p>
-                        )}
-                    </div>
-
-                    <div className={styles.stockStatus}>
-                        Status: <span className={product.inStock ? styles.inStock : styles.outOfStock}>
-                            {product.inStock ? 'In Stock' : 'Out of Stock'}
-                        </span>
-                    </div>
-
-                    <div className={styles.purchaseControls}>
-                        <input
-                            type="number"
-                            min="1"
-                            value={quantity}
-                            onChange={handleQuantityChange}
-                            className={styles.quantityInput}
-                            disabled={!product.inStock}
-                        />
-                        <button 
-                            className={styles.addToCartButton} 
-                            onClick={handleAddToCart}
-                            disabled={!product.inStock}
-                        >
-                            Add to Cart
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* 3. Detailed Tabs (Ingredients, Usage, Warnings) */}
-            <div className={styles.productDetailsTabs}>
-                <h2>Product Details</h2>
-                
-                {product.ingredients && product.ingredients.length > 0 && (
-                    <div className={styles.detailSection}>
-                        <h3>Ingredients</h3>
-                        <ul className={styles.detailList}>
-                            {product.ingredients.map((ing, index) => (
-                                <li key={index}>{ing}</li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-                
-                {product.usage && (
-                    <div className={styles.detailSection}>
-                        <h3>Directions for Use</h3>
-                        <p>{product.usage}</p>
-                    </div>
-                )}
-                
-                {product.warnings && product.warnings.length > 0 && (
-                    <div className={styles.detailSection}>
-                        <h3>⚠️ Warnings</h3>
-                        <ul className={styles.detailList}>
-                            {product.warnings.map((warn, index) => (
-                                <li key={index}>{warn}</li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-            </div>
-            
-            {/* 4. Related Products */}
-            {relatedProducts.length > 0 && (
-                <div className={styles.relatedProductsSection}>
-                    <h2>You Might Also Like</h2>
-                    <div className={styles.relatedGrid}>
-                        {relatedProducts.map(rel => (
-                            // Linking back to the skin route using the product's slug
-                            <a 
-                                key={rel.id} 
-                                href={`/skin/${rel.slug}`} 
-                                className={styles.relatedLink}
-                            >
-                                <RelatedProductCard product={rel} />
-                            </a>
-                        ))}
-                    </div>
-                </div>
-            )}
-        </div>
+    products = products.filter(
+      (p) =>
+        p.price >= filters.priceRange[0] &&
+        p.price <= filters.priceRange[1]
     );
+
+    if (filters.inStock !== null) {
+      products = products.filter((p) => p.inStock === filters.inStock);
+    }
+
+    return sortProducts(products, sortBy);
+  }, [searchQuery, filters, sortBy]);
+
+  // =========================================================
+  // Handlers
+  // =========================================================
+  const handleAddToCart = useCallback(
+    (product: SkinProduct) => {
+      if (!product.inStock) {
+        toast.error("Product is out of stock");
+        return;
+      }
+
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        quantity: 1,
+      });
+
+      toast.success(`${product.name} added to cart 🛒`, {
+        duration: 2000,
+        position: "bottom-center",
+      });
+    },
+    [addToCart]
+  );
+
+  const handleCategoryChange = (category: ProductCategory | "all") =>
+    setFilters((prev) => ({ ...prev, category }));
+
+  const handlePriceRangeChange = (range: [number, number]) => {
+    const [min, max] = [
+      Math.max(0, range[0]),
+      Math.min(MAX_PRICE, range[1]),
+    ];
+    setFilters((prev) => ({ ...prev, priceRange: [min, max] }));
+  };
+
+  const handleStockFilterChange = (inStock: boolean | null) =>
+    setFilters((prev) => ({ ...prev, inStock }));
+
+  const resetFilters = () => {
+    setFilters({ category: "all", priceRange: [0, MAX_PRICE], inStock: null });
+    setSearchQuery("");
+  };
+
+  // =========================================================
+  // UI: Filter options
+  // =========================================================
+  const categories: Array<{ value: ProductCategory | "all"; label: string }> = [
+    { value: "all", label: "All Products" },
+    { value: "acne-treatment", label: "Acne Treatment" },
+    { value: "anti-aging", label: "Anti-Aging" },
+    { value: "moisturizers", label: "Moisturizers" },
+    { value: "serums", label: "Serums" },
+    { value: "cleansers", label: "Cleansers" },
+    { value: "topical-antibiotics", label: "Topical Antibiotics" },
+    { value: "antifungal", label: "Antifungal" },
+    { value: "anti-inflammatory", label: "Anti-Inflammatory" },
+    { value: "specialty-treatments", label: "Specialty Treatments" },
+  ];
+
+  // =========================================================
+  // Render
+  // =========================================================
+  return (
+    <section className={styles.offersSection} aria-label="Skincare products">
+      <header className={styles.header}>
+        <div>
+          <h1 className={styles.title}>Premium Skincare & Treatments</h1>
+          <p className={styles.subtitle}>
+            Professional-grade skincare for all your dermatological needs
+          </p>
+        </div>
+      </header>
+
+      {/* Search + Sorting */}
+      <div className={styles.controlsBar}>
+        <div className={styles.searchWrapper}>
+          <Search size={20} className={styles.searchIcon} />
+          <input
+            type="search"
+            placeholder="Search products..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={styles.searchInput}
+          />
+        </div>
+
+        <div className={styles.controlButtons}>
+          <button
+            className={styles.filterToggle}
+            onClick={() => setShowFilters((v) => !v)}
+            aria-expanded={showFilters}
+          >
+            <Filter size={18} />
+            <span>Filters</span>
+          </button>
+
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as SortOption)}
+            className={styles.sortSelect}
+          >
+            <option value="name">Name (A-Z)</option>
+            <option value="price-asc">Price: Low → High</option>
+            <option value="price-desc">Price: High → Low</option>
+            <option value="rating">Highest Rated</option>
+            <option value="discount">Best Discount</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Filters */}
+      {showFilters && (
+        <div className={styles.filterPanel}>
+          <div className={styles.filterSection}>
+            <h3>Category</h3>
+            <div className={styles.categoryButtons}>
+              {categories.map((cat) => (
+                <button
+                  key={cat.value}
+                  onClick={() => handleCategoryChange(cat.value)}
+                  className={
+                    filters.category === cat.value
+                      ? styles.categoryActive
+                      : ""
+                  }
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.filterSection}>
+            <h3>
+              Price Range ({formatPrice(filters.priceRange[0])} –{" "}
+              {formatPrice(filters.priceRange[1])})
+            </h3>
+            <div className={styles.priceInputs}>
+              <input
+                type="number"
+                min={0}
+                value={filters.priceRange[0]}
+                onChange={(e) =>
+                  handlePriceRangeChange([+e.target.value, filters.priceRange[1]])
+                }
+              />
+              <span>to</span>
+              <input
+                type="number"
+                min={0}
+                value={filters.priceRange[1]}
+                onChange={(e) =>
+                  handlePriceRangeChange([filters.priceRange[0], +e.target.value])
+                }
+              />
+            </div>
+          </div>
+
+          <div className={styles.filterSection}>
+            <h3>Availability</h3>
+            <div className={styles.stockButtons}>
+              {[
+                { label: "All", value: null },
+                { label: "In Stock", value: true },
+                { label: "Out of Stock", value: false },
+              ].map((opt) => (
+                <button
+                  key={opt.label}
+                  onClick={() => handleStockFilterChange(opt.value)}
+                  className={
+                    filters.inStock === opt.value ? styles.stockActive : ""
+                  }
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <button onClick={resetFilters} className={styles.resetFilters}>
+            Reset Filters
+          </button>
+        </div>
+      )}
+
+      {/* Results */}
+      <p className={styles.resultsInfo}>
+        Showing <strong>{filteredProducts.length}</strong> of{" "}
+        <strong>{skinProducts.length}</strong>{" "}
+        {searchQuery && <>for "{searchQuery}"</>}
+      </p>
+
+      {/* Product Grid */}
+      {filteredProducts.length > 0 ? (
+        <div className={styles.offersGrid}>
+          {filteredProducts.map((p) => (
+            <ProductCard
+              key={p.id}
+              product={p}
+              onAddToCart={handleAddToCart}
+              onImageClick={setSelectedImage}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className={styles.noResults}>
+          <p>No products found.</p>
+          <button onClick={resetFilters} className={styles.resetBtn}>
+            Clear Filters
+          </button>
+        </div>
+      )}
+
+      {/* Modal */}
+      {selectedImage && (
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setSelectedImage(null)}
+        >
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={selectedImage}
+              alt="Product Preview"
+              className={styles.modalImage}
+            />
+            <button
+              className={styles.closeBtn}
+              onClick={() => setSelectedImage(null)}
+            >
+              <X size={24} />
+            </button>
+          </div>
+        </div>
+      )}
+    </section>
+  );
 };
 
-export default SkinDetails;
+export default memo(Skin);

@@ -31,6 +31,13 @@ import Offers1 from "./pages/Offers1";
 import PromoBanners from "./promo/PromoBanners";
 import WellnessBanner from "./promo/WellnessBanner";
 import BlogSection from "./blog/BlogSection";
+import BeautyDetails from "./productDetails/BeautyDetails";
+
+import OffersD from "./productDetails/OffersD";
+import Offers1D from "./productDetails/Offers1D";
+import ShopDetails from "./productDetails/ShopDetails";
+import HomeDetails from "./productDetails/HomeDetails";
+import BestSellersDetails from "./productDetails/BestSellersDetails";
 
 // ===============================================================
 // 🔄 Lazy-Loaded Routes (Code-Splitting for Performance)
@@ -57,7 +64,6 @@ const CoughFluCold = lazy(() => import("./conditions/CoughFluCold"));
 const UTI = lazy(() => import("./conditions/Uti"));
 const EyeEar = lazy(() => import("./conditions/EyeEar"));
 const OralCare = lazy(() => import("./conditions/Oral"));
-const SkinDrugs = lazy(() => import("./conditions/SkinInfection"));
 const WomenHealthShop = lazy(() => import("./dropdowns/Women"));
 const MensHealth = lazy(() => import("./dropdowns/Men"));
 
@@ -150,7 +156,6 @@ const HomePage: FC = memo(() => (
     <ProductCarousel />
     <BestSellers />
     <Suspense fallback={<LoadingFallback />}>
-      <SkinDrugs />
     </Suspense>
     <Offers1 />
     <ShopByCategory />
@@ -262,8 +267,7 @@ const App: FC = () => {
                 <Route path="/conditions/uti-infections" element={<UTI />} />
                 <Route path="/conditions/ear-eye-care" element={<EyeEar />} />
                 <Route path="/conditions/oral-hygiene" element={<OralCare />} />
-                <Route path="/conditions/skin-treatment" element={<SkinDrugs />} />
-
+                
                 {/* === System Routes === */}
                 <Route path="/system/respiratory" element={<Resp />} />
                 <Route path="/system/git" element={<GIT />} />
@@ -312,6 +316,18 @@ const App: FC = () => {
 
                 {/* === 404 Not Found === */}
                 <Route path="*" element={<NotFound />} />
+
+               <Route path="/beauty-products" element={<BeautyProducts />} />
+               <Route path="/product/:id" element={<BeautyDetails/>} />
+               <Route path="/offers/:id" element={<OffersD/>} />
+              <Route path="/offers1/:id" element={<Offers1D />} />
+              <Route path="/shop/:id" element={<ShopDetails />} />
+              <Route path="/home-product/:id" element={<HomeDetails/>} />
+              <Route path="/bestsellers/:id" element={<BestSellersDetails/>} />
+              
+
+
+
               </Routes>
             </Suspense>
           </main>
