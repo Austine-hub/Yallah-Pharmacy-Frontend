@@ -38,6 +38,9 @@ import Offers1D from "./productDetails/Offers1D";
 import ShopDetails from "./productDetails/ShopDetails";
 import HomeDetails from "./productDetails/HomeDetails";
 import BestSellersDetails from "./productDetails/BestSellersDetails";
+import SkincareDetails from "./productDetails/SkincareDetails";
+import VitaminDetails from "./productDetails/VitaminDetails";
+import OBGYNDetails from "./productDetails/ObgynDetails";
 
 // ===============================================================
 // 🔄 Lazy-Loaded Routes (Code-Splitting for Performance)
@@ -146,14 +149,14 @@ ScrollToTop.displayName = "ScrollToTop";
 const HomePage: FC = memo(() => (
   <>
     <Hero />
-    <Offers1 />
+    <ProductCarousel />
     <PromoBanners />
-    <Shop />
+     <Shop />
+    <Offers1 />   
     <WellnessBanner />
     <Suspense fallback={<LoadingFallback />}>
       <Offers />
     </Suspense>
-    <ProductCarousel />
     <BestSellers />
     <Suspense fallback={<LoadingFallback />}>
     </Suspense>
@@ -317,6 +320,7 @@ const App: FC = () => {
                 {/* === 404 Not Found === */}
                 <Route path="*" element={<NotFound />} />
 
+                {/* === Single Product Page Details === */}
                <Route path="/beauty-products" element={<BeautyProducts />} />
                <Route path="/product/:id" element={<BeautyDetails/>} />
                <Route path="/offers/:id" element={<OffersD/>} />
@@ -324,6 +328,10 @@ const App: FC = () => {
               <Route path="/shop/:id" element={<ShopDetails />} />
               <Route path="/home-product/:id" element={<HomeDetails/>} />
               <Route path="/bestsellers/:id" element={<BestSellersDetails/>} />
+              <Route path="/skin/:id" element={<SkincareDetails/>} />
+              <Route path="/vitamin-product/:id" element={<VitaminDetails />} />
+             <Route path="/sexual-product/:id" element={<OBGYNDetails/>} />
+
               
 
 

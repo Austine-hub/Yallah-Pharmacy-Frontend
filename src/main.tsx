@@ -2,6 +2,8 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.tsx";
+import { WishlistProvider } from "./context/WishlistContext";
+import { HeadProvider } from "react-head";
 import "./index.css";
 
 const container = document.getElementById("root");
@@ -13,8 +15,20 @@ const root = createRoot(container);
 
 root.render(
   <StrictMode>
+     <HeadProvider>
     <BrowserRouter basename="/">
-      <App />
+         <WishlistProvider>
+          <App />
+        </WishlistProvider>
     </BrowserRouter>
+     </HeadProvider>
+
   </StrictMode>
 );
+
+
+
+
+
+
+

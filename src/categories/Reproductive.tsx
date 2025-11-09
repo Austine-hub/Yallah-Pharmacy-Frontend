@@ -1,4 +1,4 @@
-// src/components/Shop.tsx
+// src/components/OBGYN.tsx
 import React from "react";
 import styles from "./Shop.module.css";
 

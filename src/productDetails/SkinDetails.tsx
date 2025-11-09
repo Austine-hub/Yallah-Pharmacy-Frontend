@@ -1,262 +1,168 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Star, ShoppingCart } from 'lucide-react';
-import toast from 'react-hot-toast';
-
+import { useParams, useNavigate } from 'react-router-dom';
 import { 
     getProductBySlug, 
     getRelatedProducts,
     formatPrice, 
     calculateSavings,
-    type SkinProduct
-} from '../data/SkinData';
+    // Use type-only import for SkinProduct
+    type SkinProduct // <--- FIX for TS1484
+} from '../data/SkinData'; // Adjust the path to your SkinData.ts file
 
-import styles from './Offers.module.css';
+// Import CSS module (Assuming you named it SkinDetails.module.css)
+// NOTE: I'm keeping 'ShopD.module.css' as per your original code's path
+import styles from './ShopD.module.css'; 
 
-// Placeholder for useCart hook
-const useCart = () => ({
-    addToCart: (item: any) => console.log('Adding to cart (Placeholder):', item),
-});
-
-type ProductType = SkinProduct;
-type TabType = 'ingredients' | 'usage' | 'warnings';
-
-// ===============================================================
-// Related Product Card Component
-// ===============================================================
-interface RelatedProductCardProps {
-    product: ProductType;
-}
-
-const RelatedProductCard: React.FC<RelatedProductCardProps> = ({ product }) => (
-    <Link to={`/skin/${product.slug}`} className={styles.relatedLink}>
-        <div className={styles.relatedCard}>
-            <img 
-                src={product.image} 
-                alt={product.name} 
-                className={styles.relatedImage} 
-                loading="lazy"
-            />
-            <h4 className={styles.relatedName}>{product.name}</h4>
-            <div className={styles.relatedPrices}>
-                <p className={styles.relatedPrice}>{formatPrice(product.price)}</p>
-                {product.discount > 0 && (
-                    <span className={styles.relatedOldPrice}>{formatPrice(product.oldPrice)}</span>
-                )}
-            </div>
-        </div>
-    </Link>
+// Placeholder component for related products (you'd need to create this)
+// Uses the imported type
+const RelatedProductCard: React.FC<{ product: SkinProduct }> = ({ product }) => (
+    <div className={styles.relatedCard} onClick={() => { /* Navigation logic if not wrapped in <a> */ }}>
+        <img src={product.image} alt={product.name} className={styles.relatedImage} />
+        <h4 className={styles.relatedName}>{product.name}</h4>
+        <p className={styles.relatedPrice}>{formatPrice(product.price)}</p>
+    </div>
 );
 
-// ===============================================================
-// Main Detail Component
-// ===============================================================
+
 const SkinDetails: React.FC = () => {
+    // We use 'id' in the route path, but best practice is to treat it as the slug
     const { id: slug } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { addToCart } = useCart();
     
-    const [product, setProduct] = useState<ProductType | null>(null);
+    const [product, setProduct] = useState<SkinProduct | null>(null);
     const [mainImage, setMainImage] = useState<string>('');
     const [quantity, setQuantity] = useState<number>(1);
-    const [relatedProducts, setRelatedProducts] = useState<ProductType[]>([]);
-    const [activeTab, setActiveTab] = useState<TabType>('ingredients');
+    
+    // State for related products
+    const [relatedProducts, setRelatedProducts] = useState<SkinProduct[]>([]);
 
-    // Helper function to determine default tab
-    const getDefaultTab = (prod: ProductType): TabType => {
-        if (prod.ingredients && prod.ingredients.length > 0) return 'ingredients';
-        if (prod.usage) return 'usage';
-        if (prod.warnings && prod.warnings.length > 0) return 'warnings';
-        return 'ingredients';
-    };
+    // --- Removed Unused State for TS6133 ---
+    // const [reviews, setReviews] = useState<Review[]>([]); 
+    // const [activeTab, setActiveTab] = useState<...>(...); 
+    // ----------------------------------------
 
     useEffect(() => {
         if (!slug) {
-            navigate('/404');
+            console.error("Product slug is missing.");
             return;
         }
-        
+
+        // 1. Fetch the main product data
         const fetchedProduct = getProductBySlug(slug);
 
         if (fetchedProduct) {
             setProduct(fetchedProduct);
-            
-            // Initialize main image
+            // Initialize main image from the first image in the gallery, or the main image field
             const initialImage = fetchedProduct.gallery?.[0] || fetchedProduct.image;
             setMainImage(initialImage);
             
-            // Set default tab
-            setActiveTab(getDefaultTab(fetchedProduct));
-            
-            // Fetch related products
-            const related = getRelatedProducts(fetchedProduct.slug);
+            // 2. Fetch related products (using ID for the utility function)
+            const related = getRelatedProducts(fetchedProduct.id);
             setRelatedProducts(related);
+
         } else {
             setProduct(null);
         }
-    }, [slug, navigate]); 
+    }, [slug, navigate]); // Re-run effect when the slug changes
     
-    // Handlers
+    if (!product) {
+        return <div className={styles.loading}>Product not found or still loading...</div>;
+    }
+
+    // Determine the array of images to use for the gallery/thumbnails
+    const galleryImages = product.gallery && product.gallery.length > 0 
+        ? product.gallery 
+        : [product.image];
+
+    // --- Handlers ---
     const handleAddToCart = () => {
-        if (!product || !product.inStock) {
-            toast.error('Product is out of stock', { duration: 2000 });
-            return;
-        }
-
-        addToCart({
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            image: product.image,
-            quantity: quantity
-        });
-
-        toast.success(
-            `${quantity} x ${product.name} added to cart!`,
-            { duration: 2000, position: 'bottom-center' }
-        );
+        // Implement your cart logic here (e.g., using context or Redux)
+        console.log(`Added ${quantity} x ${product.name} to cart.`);
+        // Example: dispatch(addItemToCart({ ...product, quantity }));
     };
 
     const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = parseInt(e.target.value, 10);
+        const value = parseInt(e.target.value);
         if (!isNaN(value) && value >= 1) {
             setQuantity(value);
         }
     };
-    
+
     const handleRatingClick = () => {
+        // Scroll to the review section or open a review modal
         console.log('Navigating to reviews/rating section.');
+        // document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' });
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            handleRatingClick();
-        }
-    };
-
-    // Render tab content
-    const renderActiveTabContent = () => {
-        if (!product) return null;
-
-        switch (activeTab) {
-            case 'ingredients':
-                return product.ingredients && product.ingredients.length > 0 ? (
-                    <ul className={styles.detailList}>
-                        {product.ingredients.map((ing, index) => (
-                            <li key={index}>{ing}</li>
-                        ))}
-                    </ul>
-                ) : <p>No ingredient information available.</p>;
-            
-            case 'usage':
-                return product.usage ? (
-                    <p>{product.usage}</p>
-                ) : (
-                    <p>No usage directions provided.</p>
-                );
-            
-            case 'warnings':
-                return product.warnings && product.warnings.length > 0 ? (
-                    <ul className={styles.detailList}>
-                        {product.warnings.map((warn, index) => (
-                            <li key={index}>⚠️ {warn}</li>
-                        ))}
-                    </ul>
-                ) : <p>No specific warnings listed.</p>;
-            
-            default:
-                return null;
-        }
-    };
-
-    // Loading state
-    if (!product) {
-        return <div className={styles.loading}>Product not found.</div>;
-    }
-
-    const galleryImages = product.gallery && product.gallery.length > 0 
-        ? product.gallery 
-        : [product.image];
-        
-    const { rating, reviewCount, description, oldPrice, price, discount, inStock } = product;
-    
-    const hasIngredients = Boolean(product.ingredients && product.ingredients.length > 0);
-    const hasWarnings = Boolean(product.warnings && product.warnings.length > 0);
+    // --- Removed Unused Function for TS6133 ---
+    // const renderList = (items: string[], highlight = false) => ( ... );
+    // -------------------------------------------
 
     return (
         <div className={styles.skinDetailsContainer}>
-            
-            <header className={styles.productHeader} aria-label={`Details for ${product.name}`}>
-                <h1 className={styles.detailTitle}>{product.name}</h1>
-                <p className={styles.detailCategory}>{product.category.toUpperCase().replace('-', ' ')}</p>
-            </header>
+            <div className={styles.productHeader}>
+                <h1>{product.name}</h1>
+            </div>
             
             <div className={styles.detailsContent}>
                 
-                {/* Image Gallery */}
+                {/* 1. Image Gallery and Main View */}
                 <div className={styles.imageGallery}>
+                    {/* Thumbnail Navigation */}
                     <div className={styles.thumbnails}>
                         {galleryImages.map((imgSrc, index) => (
                             <img 
                                 key={index}
                                 src={imgSrc}
-                                alt={`View ${index + 1} of ${product.name}`}
+                                alt={`View ${index + 1}`}
                                 className={`${styles.thumbnail} ${mainImage === imgSrc ? styles.activeThumbnail : ''}`}
                                 onClick={() => setMainImage(imgSrc)}
-                                loading="lazy"
                             />
                         ))}
                     </div>
                     
+                    {/* Main Image */}
                     <div className={styles.mainImageWrapper}>
-                        <img 
-                            src={mainImage} 
-                            alt={product.name} 
-                            className={styles.mainImage} 
-                        />
-                        {discount > 0 && (
-                            <div className={styles.discountTag} aria-label={`${discount}% discount`}>
-                                -{discount}%
-                            </div>
-                        )}
+                        <img src={mainImage} alt={product.name} className={styles.mainImage} />
                     </div>
                 </div>
 
-                {/* Product Information */}
+                {/* 2. Product Information and Purchase */}
                 <div className={styles.productInfo}>
-                    <p className={styles.productDescription}>{description}</p>
+                    <p className={styles.productDescription}>{product.description}</p>
 
-                    <div 
-                        className={styles.ratingInfo} 
-                        onClick={handleRatingClick}
-                        onKeyDown={handleKeyDown}
-                        role="button" 
-                        tabIndex={0}
-                        aria-label={`Rating: ${rating} stars with ${reviewCount} reviews`}
-                    >
+                    <div className={styles.ratingInfo} onClick={handleRatingClick}>
+                        {/* You would use an icon library here (e.g., Font Awesome/Lucide) 
+                            The original SkincareDetails.tsx had an unused 'MessageCircle' import, 
+                            which would typically be used here. 
+                        */}
                         <span className={styles.starRating}>
-                            <Star size={16} fill="currentColor" className={styles.starIcon} />
-                            <span>{rating}</span>
+                            {'★'.repeat(Math.round(product.rating || 0))}
+                            {'☆'.repeat(5 - Math.round(product.rating || 0))}
                         </span>
-                        <span className={styles.reviewCount}>({reviewCount} Reviews)</span>
+                        <span className={styles.reviewCount}>({product.reviewCount} Reviews)</span>
                     </div>
 
                     <div className={styles.priceSection}>
-                        <span className={styles.currentPrice}>{formatPrice(price)}</span>
-                        {discount > 0 && (
+                        <span className={styles.currentPrice}>{formatPrice(product.price)}</span>
+                        {product.discount > 0 && (
                             <>
-                                <span className={styles.oldPrice}>{formatPrice(oldPrice)}</span>
-                                <p className={styles.savings}>
-                                    You save {formatPrice(calculateSavings(oldPrice, price))}!
-                                </p>
+                                <span className={styles.oldPrice}>{formatPrice(product.oldPrice)}</span>
+                                <span className={styles.discountBadge}>
+                                    {product.discount}% OFF
+                                </span>
                             </>
+                        )}
+                        {product.discount > 0 && (
+                             <p className={styles.savings}>
+                                You save {formatPrice(calculateSavings(product.oldPrice, product.price))}!
+                            </p>
                         )}
                     </div>
 
                     <div className={styles.stockStatus}>
-                        Availability: <span className={inStock ? styles.inStock : styles.outOfStock}>
-                            {inStock ? 'In Stock' : 'Out of Stock'}
+                        Status: <span className={product.inStock ? styles.inStock : styles.outOfStock}>
+                            {product.inStock ? 'In Stock' : 'Out of Stock'}
                         </span>
                     </div>
 
@@ -264,75 +170,70 @@ const SkinDetails: React.FC = () => {
                         <input
                             type="number"
                             min="1"
-                            max="99"
                             value={quantity}
                             onChange={handleQuantityChange}
                             className={styles.quantityInput}
-                            disabled={!inStock}
-                            aria-label="Quantity selector"
+                            disabled={!product.inStock}
                         />
                         <button 
                             className={styles.addToCartButton} 
                             onClick={handleAddToCart}
-                            disabled={!inStock}
-                            aria-label={`Add ${quantity} ${product.name} to cart`}
+                            disabled={!product.inStock}
                         >
-                            <ShoppingCart size={20} style={{ marginRight: '8px' }}/>
                             Add to Cart
                         </button>
                     </div>
                 </div>
             </div>
 
-            {/* Product Details Tabs */}
+            {/* 3. Detailed Tabs (Ingredients, Usage, Warnings) - Now just sections */}
             <div className={styles.productDetailsTabs}>
                 <h2>Product Details</h2>
                 
-                <div className={styles.tabHeaders} role="tablist">
-                    {hasIngredients && (
-                        <button 
-                            role="tab"
-                            aria-selected={activeTab === 'ingredients'}
-                            className={activeTab === 'ingredients' ? styles.activeTab : ''}
-                            onClick={() => setActiveTab('ingredients')}
-                        >
-                            Ingredients
-                        </button>
-                    )}
-                    {product.usage && (
-                        <button 
-                            role="tab"
-                            aria-selected={activeTab === 'usage'}
-                            className={activeTab === 'usage' ? styles.activeTab : ''}
-                            onClick={() => setActiveTab('usage')}
-                        >
-                            Directions for Use
-                        </button>
-                    )}
-                    {hasWarnings && (
-                        <button 
-                            role="tab"
-                            aria-selected={activeTab === 'warnings'}
-                            className={activeTab === 'warnings' ? styles.activeTab : ''}
-                            onClick={() => setActiveTab('warnings')}
-                        >
-                            Warnings
-                        </button>
-                    )}
-                </div>
+                {product.ingredients && product.ingredients.length > 0 && (
+                    <div className={styles.detailSection}>
+                        <h3>Ingredients</h3>
+                        <ul className={styles.detailList}>
+                            {product.ingredients.map((ing, index) => (
+                                <li key={index}>{ing}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
                 
-                <div className={styles.tabContent} role="tabpanel">
-                    {renderActiveTabContent()}
-                </div>
+                {product.usage && (
+                    <div className={styles.detailSection}>
+                        <h3>Directions for Use</h3>
+                        <p>{product.usage}</p>
+                    </div>
+                )}
+                
+                {product.warnings && product.warnings.length > 0 && (
+                    <div className={styles.detailSection}>
+                        <h3>⚠️ Warnings</h3>
+                        <ul className={styles.detailList}>
+                            {product.warnings.map((warn, index) => (
+                                <li key={index}>{warn}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
             </div>
             
-            {/* Related Products */}
+            {/* 4. Related Products */}
             {relatedProducts.length > 0 && (
                 <div className={styles.relatedProductsSection}>
                     <h2>You Might Also Like</h2>
                     <div className={styles.relatedGrid}>
                         {relatedProducts.map(rel => (
-                            <RelatedProductCard key={rel.id} product={rel} />
+                            // Linking back to the skin route using the product's slug
+                            <a 
+                                key={rel.id} 
+                                href={`/skin/${rel.slug}`} 
+                                className={styles.relatedLink}
+                            >
+                                <RelatedProductCard product={rel} />
+                            </a>
                         ))}
                     </div>
                 </div>
