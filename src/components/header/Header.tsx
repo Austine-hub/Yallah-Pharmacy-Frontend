@@ -27,7 +27,6 @@ interface NavSection {
 }
 
 interface HeaderProps {
-  onLocationChange?: (location: string) => void;
   onSearch?: (query: string) => void;
   cartCount?: number;
   deliveryLocation?: string;
@@ -95,6 +94,7 @@ const Header: React.FC<HeaderProps> = ({
   const menuRef = useRef<HTMLDivElement>(null);
   const dropdownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Handle mobile menu outside click and body scroll
   useEffect(() => {
     if (!isMobileMenuOpen) return;
 
@@ -113,6 +113,7 @@ const Header: React.FC<HeaderProps> = ({
     };
   }, [isMobileMenuOpen]);
 
+  // Cleanup dropdown timer
   useEffect(() => {
     return () => {
       if (dropdownTimerRef.current) {
@@ -240,30 +241,46 @@ const Header: React.FC<HeaderProps> = ({
         <div className={styles.desktopHeader}>
           <div className={styles.topBar}>
             <div className={styles.container}>
-              <a href="/" aria-label="Yallah Pharmacy Home" className={styles.logoLink}>
-                <img src={logo} alt="" className={styles.logoImage} />
-                <div className={styles.logoText}>
-                  <div className={styles.brandName}>
-                    <span className={styles.brandYallah}>YALLAH</span>
-                    <span className={styles.brandPharmacy}>PHARMACY</span>
-                  </div>
-                  <span className={styles.tagline}>caring beyond drugs</span>
-                </div>
-              </a>
+                    <div className={styles.logoLink}>
+                      <a href="/" aria-label="Yallah Pharmacy Home">
+                        <img 
+                          src={logo} 
+                          alt="Yallah Pharmacy logo" 
+                          className={styles.logoImage} 
+                        />
+                      </a>
+
+                      <div className={styles.logoText}>
+                        <div className={styles.brandName}>
+                          <span className={styles.brandYallah}>YALLAH</span>
+                          <span className={styles.brandPharmacy}>PHARMACY</span>
+                        </div>
+                        <span className={styles.tagline}>caring beyond drugs</span>
+                      </div>
+                    </div>
+
 
               <form className={styles.searchBar} onSubmit={handleSearchSubmit} role="search">
-                <div className={styles.searchInputWrapper}>
+                <div className={styles.searchContainer}>
+                  <Search size={20} className={styles.searchIcon} aria-hidden="true" />
                   <input
                     type="search"
-                    placeholder="Search for products"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className={styles.searchInput}
+                    placeholder="Search products..."
                     aria-label="Search products"
+                    autoComplete="off"
                   />
-                  <button type="submit" className={styles.searchButton} aria-label="Search">
-                    <Search size={18} aria-hidden="true" />
-                  </button>
+                  {searchQuery && (
+                    <button
+                      type="submit"
+                      className={styles.searchButton}
+                      aria-label="Submit search"
+                    >
+                      <Search size={18} aria-hidden="true" />
+                    </button>
+                  )}
                 </div>
               </form>
 
