@@ -24,7 +24,7 @@ import pic14 from "../assets/diabetes/Linagliptin.png";
 import pic15 from "../assets/diabetes/Repaglinide.png";
 // === Additional Diabetes Drug Images ===
 import pic16 from "../assets/diabetes/Canagliflozin.png";   // SGLT2 inhibitor
-import pic17 from "../assets/diabetes/Saxagliptin.png";     // DPP-4 inhibitor
+import pic17 from "../assets/diabetes/saxagliptin.png";     // DPP-4 inhibitor
 import pic18 from "../assets/diabetes/Liraglutide.png";     // GLP-1 receptor agonist
 import pic19 from "../assets/diabetes/Exenatide.png";       // GLP-1 receptor agonist
 import pic20 from "../assets/diabetes/Teneligliptin.png";   // DPP-4 inhibitor
