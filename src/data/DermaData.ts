@@ -1,14 +1,4 @@
 // src/data/data.ts
-// ============================================================================
-// CENTRAL DATA MODEL - Single Source of Truth for Product Data (Optimized)
-// - All 20 imports are used exactly once
-// - Kenyan pricing context (currency: KSh)
-// - Type-safe, DRY, and ready for e-commerce / e-healthcare use
-// ============================================================================
-
-/* ============================
-   TYPE DEFINITIONS
-   ============================ */
 
 export type ProductCategory =
   | "Cleanser"

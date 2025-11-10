@@ -41,6 +41,10 @@ import BestSellersDetails from "./productDetails/BestSellersDetails";
 import SkincareDetails from "./productDetails/SkincareDetails";
 import VitaminDetails from "./productDetails/VitaminDetails";
 import OBGYNDetails from "./productDetails/ObgynDetails";
+import Diabetes from "./conditions/Diabetes";
+import DiabetesDetails from "./productDetails/DiabetesDetails";
+import RespiratoryDetails from "./productDetails/RespiratoryDetails";
+import HTNDetails from "./productDetails/HTNDetails";
 
 // ===============================================================
 // 🔄 Lazy-Loaded Routes (Code-Splitting for Performance)
@@ -262,7 +266,7 @@ const App: FC = () => {
 
                 {/* === Condition Routes === */}
                 <Route path="/condition/heart" element={<CVS />} />
-                <Route path="/condition/diabetes" element={<DM />} />
+                <Route path="/conditions/diabetes" element={<Diabetes/>} />
                 <Route path="/condition/women" element={<WomenHealthShop />} />
                 <Route path="/condition/men" element={<MensHealth />} />
                 <Route path="/conditions/htn" element={<HTN />} />
@@ -330,9 +334,12 @@ const App: FC = () => {
               <Route path="/bestsellers/:id" element={<BestSellersDetails/>} />
               <Route path="/skin/:id" element={<SkincareDetails/>} />
               <Route path="/vitamin-product/:id" element={<VitaminDetails />} />
-             <Route path="/sexual-product/:id" element={<OBGYNDetails/>} />
-
-              
+              <Route path="/sexual-product/:id" element={<OBGYNDetails/>} />
+              <Route path="/diabetes/:id" element={<DiabetesDetails/>} />
+              <Route path="/diabetes-product/:id" element={<DiabetesDetails/>} />
+              <Route path="/respiratory/:id" element={<RespiratoryDetails/>} />
+              <Route path="/htn-product/:id" element={<HTNDetails/>} />
+                         
 
 
 

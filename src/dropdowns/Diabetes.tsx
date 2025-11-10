@@ -1,6 +1,7 @@
 // src/components/Shop.tsx
 import React from "react";
 import styles from "../components/Shop.module.css";
+import { Link } from "react-router-dom";
 
 // === Import diabetes-related images (replace placeholders with actual paths) ===
 import metforminImg from "../assets/diabetes/Metformin.png";
@@ -84,9 +85,13 @@ const DM: React.FC = () => {
               <button className={styles.addToCart} aria-label={`Add ${product.name} to cart`}>
                 Add to Cart
               </button>
-              <button className={styles.moreInfo} aria-label={`View more information about ${product.name}`}>
+
+
+             {/*Inside your map:*/}
+              <Link to={`/diabetes-product/${product.id}`} className={styles.moreInfo}>
                 More Info
-              </button>
+              </Link>
+
             </div>
           </article>
         ))}

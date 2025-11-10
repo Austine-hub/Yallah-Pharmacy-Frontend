@@ -1,0 +1,310 @@
+/* ===============================================================
+   💊 Diabetes.module.css — Modern E-commerce Product Detail Styles
+   Inspired by: Amazon, Shopify, Apple Store aesthetics
+   =============================================================== */
+
+/* === Section Container === */
+.offersSection {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+/* === Header with Back Button === */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  letter-spacing: -0.025em;
+}
+
+/* === Product Detail Card === */
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+              0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.detailCard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  padding: 3rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.card:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+              0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: translateY(-2px);
+}
+
+/* === Image Section === */
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 450px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+  border-radius: 12px;
+  padding: 2rem;
+  overflow: hidden;
+}
+
+.productImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
+}
+
+.imageWrapper:hover .productImage {
+  transform: scale(1.05);
+}
+
+.discountTag {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.125rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 50px;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* === Product Info Section === */
+.info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.name {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.2;
+  margin: 0;
+  letter-spacing: -0.025em;
+}
+
+.description {
+  font-size: 1.125rem;
+  color: #475569;
+  line-height: 1.75;
+  margin: 0;
+}
+
+/* === Pricing Section === */
+.prices {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.newPrice {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #059669;
+  letter-spacing: -0.025em;
+}
+
+.oldPrice {
+  font-size: 1.5rem;
+  color: #94a3b8;
+  text-decoration: line-through;
+  font-weight: 500;
+}
+
+/* === Action Buttons === */
+.actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.addToCart {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.addToCart::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.addToCart:hover::before {
+  left: 100%;
+}
+
+.addToCart:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.5);
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.addToCart:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+}
+
+/* === Responsive Design === */
+@media (max-width: 968px) {
+  .detailCard {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 2rem;
+  }
+
+  .imageWrapper {
+    min-height: 350px;
+  }
+
+  .name {
+    font-size: 1.875rem;
+  }
+
+  .newPrice {
+    font-size: 2rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .offersSection {
+    padding: 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .detailCard {
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .imageWrapper {
+    min-height: 280px;
+    padding: 1rem;
+  }
+
+  .name {
+    font-size: 1.5rem;
+  }
+
+  .description {
+    font-size: 1rem;
+  }
+
+  .newPrice {
+    font-size: 1.75rem;
+  }
+
+  .oldPrice {
+    font-size: 1.25rem;
+  }
+
+  .addToCart {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .discountTag {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    top: 1rem;
+    right: 1rem;
+  }
+}
+
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+}
+
+.skeletonCard {
+  width: 300px;
+  height: 400px;
+  background: #f3f3f3;
+  border-radius: 12px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.notFound {
+  text-align: center;
+  color: #999;
+  margin-top: 3rem;
+}
