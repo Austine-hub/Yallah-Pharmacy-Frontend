@@ -49,7 +49,7 @@
   position: absolute;
   inset: 0;
   border-radius: 8px;
-  background: #e91e63;
+  background: #053b03;
   opacity: 0;
   transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: -1;
@@ -64,7 +64,7 @@
 }
 
 .viewAll:focus-visible {
-  outline: 2px solid #e91e63;
+  outline: 2px solid #034912;
   outline-offset: 3px;
 }
 
@@ -103,7 +103,7 @@
   inset: 0;
   border-radius: 16px;
   padding: 1px;
-  background: linear-gradient(135deg, #e91e63, #ff6b9d);
+  background: linear-gradient(135deg, #025816, #06d63a);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -156,7 +156,7 @@
   left: 1rem;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  color: #e91e63;
+  color: #01250c;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -191,7 +191,7 @@
 }
 
 .card:hover .title {
-  color: #e91e63;
+  color: #033f17;
 }
 
 /* Footer */
