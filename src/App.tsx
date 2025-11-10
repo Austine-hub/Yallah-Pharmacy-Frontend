@@ -16,6 +16,7 @@ import appStyles from "./App.module.css";
 import Header from "./components/header/Header";
 import Footer from "./components/footer/Footer";
 import BottomNav from "./components/footer/BottomNav";
+import Dashboard from "./pages/Dashboard";
 
 // Lazy pages & route components
 const HomePage = lazy(() => import("./pages/Home"));
@@ -194,6 +195,7 @@ const App: FC = () => {
             <Suspense fallback={<LoadingFallback />}>
               <Routes>
                 <Route path="/" element={<HomePage />} />
+                <Route path="/dashboard" element={<Dashboard/>} />
 
                 {/* Products */}
                 <Route path="/products/prescription" element={<ProductsWrapper />} />

@@ -1,18 +1,20 @@
+/* Dashboard.module.css */
+
 :root {
   --primary-600: #0066cc;
   --primary-700: #0052a3;
   --primary-50: #e6f2ff;
   --primary-100: #b3d9ff;
-
+  
   --success-600: #059669;
   --success-50: #d1fae5;
-
+  
   --warning-600: #d97706;
   --warning-50: #fef3c7;
-
+  
   --danger-600: #dc2626;
   --danger-50: #fee2e2;
-
+  
   --gray-50: #f9fafb;
   --gray-100: #f3f4f6;
   --gray-200: #e5e7eb;
@@ -23,7 +25,7 @@
   --gray-700: #374151;
   --gray-800: #1f2937;
   --gray-900: #111827;
-
+  
   --white: #ffffff;
   --border-radius: 12px;
   --border-radius-lg: 16px;
@@ -33,14 +35,12 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-
   /* Header/Footer offset used to keep sidebar & overlay between them.
      Adjust these to match your actual header/footer heights. */
   --header-height: 88px;
   --footer-height: 88px;
 }
 
-/* Basic reset */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -54,63 +54,46 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Container for app layout */
 .container {
   display: flex;
   min-height: 100vh;
   background: var(--gray-50);
 }
 
-/* Sidebar (desktop) - fixed but limited between header & footer */
+/* Sidebar */
 .sidebar {
   width: 280px;
   background: var(--white);
   border-right: 1px solid var(--gray-200);
   display: flex;
   flex-direction: column;
-  position: fixed;
+  position: sticky;
+  left: 0;
+  top: 0;
+/* Constrain between header & footer so overlay won't cover them */
+  top: var(--header-height);
+   height: auto; /* with top/bottom specified, height is computed */
+  z-index: 750;
+  transition: var(--transition);
+}
+
+
+/* Sidebar (desktop) - fixed but limited between header & footer */
+.sidebar {
+
   /* Constrain between header & footer so overlay won't cover them */
   top: var(--header-height);
   bottom: var(--footer-height);
-  left: 0;
-  height: auto; /* with top/bottom specified, height is computed */
-  z-index: 1000;
-  transition: transform 0.28s cubic-bezier(0.2, 0.9, 0.2, 1), box-shadow 0.28s;
+ 
+    transition: transform 0.28s cubic-bezier(0.2, 0.9, 0.2, 1), box-shadow 0.28s;
   box-shadow: var(--shadow-sm);
-  transform: translateX(-100%); /* closed by default - slide from left */
+  
   will-change: transform;
 }
-
-/* Additional utility classes */
-.sidebarOpen {
-  transform: translateX(0);
-  box-shadow: var(--shadow-lg);
-}
-
-.sidebarClosed {
-  transform: translateX(-100%);
-}
-
-/* Desktop collapse/close button (visible when open).
-   There's also .menuButton in header to open it. */
 .sidebarClose {
-  display: flex;            /* show on desktop */
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: transparent;
-  color: var(--gray-600);
-  border-radius: var(--border-radius-sm);
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-.sidebarClose:hover {
-  background: var(--gray-100);
+  display: none;
 }
 
-/* Sidebar header */
 .sidebarHeader {
   padding: 24px;
   border-bottom: 1px solid var(--gray-100);
@@ -268,34 +251,19 @@ body {
   color: var(--danger-600);
 }
 
-/* Overlay that appears when sidebar is open.
-   It is constrained between header & footer using same offsets as the sidebar. */
-.sidebarOverlay {
-  position: fixed;
-  top: var(--header-height);
-  bottom: var(--footer-height);
-  left: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.18);
-  z-index: 900; /* less than the sidebar which is 1000 */
-  transition: opacity 0.18s ease;
-}
-
-/* Main content area */
+/* Main Content */
 .main {
   flex: 1;
-  margin-left: 0; /* sidebar is off-canvas by default; when open it overlays content */
+  margin-left: 280px;
   padding: 24px;
   max-width: 1600px;
   width: 100%;
 }
 
-/* Menu button (visible on desktop but mostly used for toggling the sidebar) */
 .menuButton {
   display: none;
 }
 
-/* Header */
 .header {
   margin-bottom: 32px;
 }
@@ -616,14 +584,12 @@ body {
   box-shadow: var(--shadow-md);
 }
 
-/* Dashboard Sidebar (inline-right desktop column) - independent from fixed sidebar above */
+/* Dashboard Sidebar */
 .dashboardSidebar {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
-
-/* ... rest of dashboard right-column styles left unchanged ... */
 
 .recentOrdersSection,
 .healthStatsSection {
@@ -1050,23 +1016,13 @@ body {
 }
 
 /* Responsive Design */
-/* At narrower widths, we collapse the fixed sidebar to an off-canvas transform,
-   and expose the menuButton. */
 @media (max-width: 1200px) {
   .dashboardGrid {
     grid-template-columns: 1fr;
   }
-
+  
   .adminGrid {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  }
-}
-
-@media (max-width: 1024px) {
-  /* reduce header/footer offsets on tablets */
-  :root {
-    --header-height: 72px;
-    --footer-height: 72px;
   }
 }
 
@@ -1074,12 +1030,33 @@ body {
   .sidebar {
     transform: translateX(-100%);
   }
-
+  
   .sidebarOpen {
     transform: translateX(0);
   }
-
-  /* show the header menu button on small screens */
+  
+  .sidebarClose {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--gray-600);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+  }
+  
+  .sidebarClose:hover {
+    background: var(--gray-100);
+  }
+  
+  .main {
+    margin-left: 0;
+    padding: 16px;
+  }
+  
   .menuButton {
     display: flex;
     align-items: center;
@@ -1094,32 +1071,28 @@ body {
     margin-bottom: 16px;
     box-shadow: var(--shadow-sm);
   }
-
+  
   .menuButton:hover {
     background: var(--gray-50);
     border-color: var(--gray-300);
   }
-
-  .main {
-    padding: 16px;
-  }
-
+  
   .greeting {
     font-size: 24px;
   }
-
+  
   .quickActionsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
-
+  
   .prescriptionDetails {
     grid-template-columns: 1fr;
   }
-
+  
   .adminStatsGrid {
     grid-template-columns: 1fr;
   }
-
+  
   .adminGrid {
     grid-template-columns: 1fr;
   }
@@ -1129,19 +1102,20 @@ body {
   .quickActionsGrid {
     grid-template-columns: 1fr;
   }
-
+  
   .headerActions {
     gap: 8px;
   }
-
+  
   .headerButton {
     width: 40px;
     height: 40px;
   }
-
   /* on very small screens, use full-screen overlay since header/footer small */
   :root {
     --header-height: 64px;
     --footer-height: 64px;
   }
 }
+
+

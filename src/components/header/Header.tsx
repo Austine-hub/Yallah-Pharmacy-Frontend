@@ -33,8 +33,10 @@ interface HeaderProps {
 }
 
 const NAVIGATION_SECTIONS: readonly NavSection[] = [
-  { label: "Home", key: "home", path: "/" },
-  { label: "Our Services", key: "services", path: "/about-us" },
+
+
+    { label: "Home", key: "home", path: "/" }, 
+
   {
     label: "Shop By Category",
     key: "category",
@@ -76,6 +78,7 @@ const NAVIGATION_SECTIONS: readonly NavSection[] = [
   },
   { label: "Our Blog", key: "blog", path: "/blog" },
   { label: "Contact Us", key: "contact", path: "/contact-us" },
+  { label: "Dashboard", key: "dashboard", path: "/dashboard" },
 ];
 
 const PHONE_NUMBER = "+254111054949";
