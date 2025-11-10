@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { 
   Pill, FileText, Calendar, Package, CreditCard, 
   Settings, Bell, Home, User, LogOut, 
@@ -95,6 +95,8 @@ const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [activeRole, setActiveRole] = useState<Role>("customer");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const sidebarRef = useRef<HTMLElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   const quickActions: QuickAction[] = [
     { id: "refill", title: "Refill Prescription", icon: <Pill size={24} />, action: "refill" },
@@ -125,6 +127,39 @@ const Dashboard: React.FC = () => {
     fetchUserData();
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        sidebarOpen &&
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node) &&
+        menuButtonRef.current &&
+        !menuButtonRef.current.contains(event.target as Node)
+      ) {
+        setSidebarOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && sidebarOpen) {
+        setSidebarOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+
+    if (sidebarOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleEscape);
+      document.body.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "";
+    };
+  }, [sidebarOpen]);
+
   const handleRoleSwitch = useCallback((role: Role) => {
     setActiveRole(role);
     setSidebarOpen(false);
@@ -134,11 +169,15 @@ const Dashboard: React.FC = () => {
     console.log(`Quick action triggered: ${action}`);
   }, []);
 
+  const toggleSidebar = useCallback(() => {
+    setSidebarOpen((prev) => !prev);
+  }, []);
+
   if (isLoading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loadingWrapper}>
-          <div className={styles.loadingSpinner}></div>
+        <div className={styles.loadingWrapper} role="status" aria-live="polite">
+          <div className={styles.loadingSpinner} aria-hidden="true"></div>
           <span className={styles.loadingText}>Loading your dashboard...</span>
         </div>
       </div>
@@ -149,13 +188,13 @@ const Dashboard: React.FC = () => {
     return (
       <div className={styles.container}>
         <div className={styles.loginPrompt}>
-          <Shield size={64} className={styles.loginIcon} />
+          <Shield size={64} className={styles.loginIcon} aria-hidden="true" />
           <h2 className={styles.loginTitle}>Secure Access Required</h2>
           <p className={styles.loginMessage}>
             Please log in to access your health dashboard and prescription information.
           </p>
-          <button className={styles.loginButton}>
-            <User size={20} />
+          <button className={styles.loginButton} aria-label="Sign in securely">
+            <User size={20} aria-hidden="true" />
             Sign In Securely
           </button>
         </div>
@@ -166,28 +205,38 @@ const Dashboard: React.FC = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "delivered":
-        return <CheckCircle2 size={16} />;
+        return <CheckCircle2 size={16} aria-hidden="true" />;
       case "shipped":
-        return <Truck size={16} />;
+        return <Truck size={16} aria-hidden="true" />;
       case "processing":
-        return <Clock size={16} />;
+        return <Clock size={16} aria-hidden="true" />;
       default:
-        return <Package size={16} />;
+        return <Package size={16} aria-hidden="true" />;
     }
   };
 
   return (
     <div className={styles.container}>
-      <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}>
+      {sidebarOpen && <div className={styles.overlay} aria-hidden="true" />}
+
+      <aside
+        ref={sidebarRef}
+        className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}
+        aria-label="Main navigation"
+      >
         <div className={styles.sidebarHeader}>
           <div className={styles.logo}>
-            <div className={styles.logoIcon}>
+            <div className={styles.logoIcon} aria-hidden="true">
               <Pill size={28} strokeWidth={2.5} />
             </div>
             <span className={styles.logoText}>HealthRx</span>
           </div>
-          <button className={styles.sidebarClose} onClick={() => setSidebarOpen(false)}>
-            <X size={24} />
+          <button
+            className={styles.sidebarClose}
+            onClick={() => setSidebarOpen(false)}
+            aria-label="Close navigation menu"
+          >
+            <X size={24} aria-hidden="true" />
           </button>
         </div>
 
@@ -195,54 +244,56 @@ const Dashboard: React.FC = () => {
           <button
             className={`${styles.navItem} ${activeRole === "customer" ? styles.navItemActive : ""}`}
             onClick={() => handleRoleSwitch("customer")}
+            aria-current={activeRole === "customer" ? "page" : undefined}
           >
-            <Home size={20} />
+            <Home size={20} aria-hidden="true" />
             <span>Dashboard</span>
-            <ChevronRight size={16} className={styles.navArrow} />
+            <ChevronRight size={16} className={styles.navArrow} aria-hidden="true" />
           </button>
           <button className={styles.navItem}>
-            <Pill size={20} />
+            <Pill size={20} aria-hidden="true" />
             <span>Prescriptions</span>
-            <ChevronRight size={16} className={styles.navArrow} />
+            <ChevronRight size={16} className={styles.navArrow} aria-hidden="true" />
           </button>
           <button className={styles.navItem}>
-            <Package size={20} />
+            <Package size={20} aria-hidden="true" />
             <span>Orders</span>
-            <ChevronRight size={16} className={styles.navArrow} />
+            <ChevronRight size={16} className={styles.navArrow} aria-hidden="true" />
           </button>
           <button className={styles.navItem}>
-            <CreditCard size={20} />
+            <CreditCard size={20} aria-hidden="true" />
             <span>Payments</span>
-            <ChevronRight size={16} className={styles.navArrow} />
+            <ChevronRight size={16} className={styles.navArrow} aria-hidden="true" />
           </button>
           <button className={styles.navItem}>
-            <Settings size={20} />
+            <Settings size={20} aria-hidden="true" />
             <span>Settings</span>
-            <ChevronRight size={16} className={styles.navArrow} />
+            <ChevronRight size={16} className={styles.navArrow} aria-hidden="true" />
           </button>
           {user.role === "admin" && (
             <button
               className={`${styles.navItem} ${activeRole === "admin" ? styles.navItemActive : ""}`}
               onClick={() => handleRoleSwitch("admin")}
+              aria-current={activeRole === "admin" ? "page" : undefined}
             >
-              <Shield size={20} />
+              <Shield size={20} aria-hidden="true" />
               <span>Admin Panel</span>
-              <ChevronRight size={16} className={styles.navArrow} />
+              <ChevronRight size={16} className={styles.navArrow} aria-hidden="true" />
             </button>
           )}
         </nav>
 
         <div className={styles.sidebarFooter}>
           <div className={styles.userProfile}>
-            <div className={styles.userAvatar}>
+            <div className={styles.userAvatar} aria-hidden="true">
               <User size={20} />
             </div>
             <div className={styles.userInfo}>
               <div className={styles.userName}>{user.name}</div>
               <div className={styles.userRole}>{user.role}</div>
             </div>
-            <button className={styles.logoutButton}>
-              <LogOut size={18} />
+            <button className={styles.logoutButton} aria-label="Log out">
+              <LogOut size={18} aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -250,8 +301,14 @@ const Dashboard: React.FC = () => {
 
       <main className={styles.main}>
         <header className={styles.header}>
-          <button className={styles.menuButton} onClick={() => setSidebarOpen(true)}>
-            <Menu size={24} />
+          <button
+            ref={menuButtonRef}
+            className={styles.menuButton}
+            onClick={toggleSidebar}
+            aria-label="Toggle navigation menu"
+            aria-expanded={sidebarOpen}
+          >
+            <Menu size={24} aria-hidden="true" />
           </button>
           <div className={styles.headerContent}>
             <div>
@@ -261,12 +318,12 @@ const Dashboard: React.FC = () => {
               </p>
             </div>
             <div className={styles.headerActions}>
-              <button className={styles.headerButton}>
-                <Bell size={20} />
-                <span className={styles.notificationBadge}>3</span>
+              <button className={styles.headerButton} aria-label="View 3 notifications">
+                <Bell size={20} aria-hidden="true" />
+                <span className={styles.notificationBadge} aria-hidden="true">3</span>
               </button>
-              <button className={styles.headerButton}>
-                <Calendar size={20} />
+              <button className={styles.headerButton} aria-label="View calendar">
+                <Calendar size={20} aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -274,30 +331,31 @@ const Dashboard: React.FC = () => {
 
         {activeRole === "customer" && (
           <>
-            <section className={styles.section}>
-              <h2 className={styles.sectionTitle}>Quick Actions</h2>
+            <section className={styles.section} aria-labelledby="quick-actions-title">
+              <h2 id="quick-actions-title" className={styles.sectionTitle}>Quick Actions</h2>
               <div className={styles.quickActionsGrid}>
                 {quickActions.map((action) => (
                   <button
                     key={action.id}
                     className={styles.quickActionCard}
                     onClick={() => handleQuickAction(action.action)}
+                    aria-label={action.title}
                   >
-                    <div className={styles.quickActionIcon}>{action.icon}</div>
+                    <div className={styles.quickActionIcon} aria-hidden="true">{action.icon}</div>
                     <span className={styles.quickActionTitle}>{action.title}</span>
-                    <ChevronRight size={18} className={styles.quickActionArrow} />
+                    <ChevronRight size={18} className={styles.quickActionArrow} aria-hidden="true" />
                   </button>
                 ))}
               </div>
             </section>
 
             <div className={styles.dashboardGrid}>
-              <section className={styles.prescriptionsSection}>
+              <section className={styles.prescriptionsSection} aria-labelledby="prescriptions-title">
                 <div className={styles.sectionHeader}>
-                  <h2 className={styles.sectionTitleLarge}>Active Prescriptions</h2>
-                  <button className={styles.viewAllButton}>
+                  <h2 id="prescriptions-title" className={styles.sectionTitleLarge}>Active Prescriptions</h2>
+                  <button className={styles.viewAllButton} aria-label="View all prescriptions">
                     View All
-                    <ChevronRight size={16} />
+                    <ChevronRight size={16} aria-hidden="true" />
                   </button>
                 </div>
                 <div className={styles.prescriptionsList}>
@@ -306,7 +364,7 @@ const Dashboard: React.FC = () => {
                     .map((prescription) => (
                       <article key={prescription.id} className={styles.prescriptionCard}>
                         <div className={styles.prescriptionHeader}>
-                          <div className={styles.prescriptionIconWrapper}>
+                          <div className={styles.prescriptionIconWrapper} aria-hidden="true">
                             <Pill size={20} />
                           </div>
                           <span className={styles.prescriptionId}>{prescription.id}</span>
@@ -330,8 +388,8 @@ const Dashboard: React.FC = () => {
                             </span>
                           </div>
                         </div>
-                        <button className={styles.refillButton}>
-                          <Pill size={16} />
+                        <button className={styles.refillButton} aria-label={`Refill ${prescription.medication}`}>
+                          <Pill size={16} aria-hidden="true" />
                           Refill Now
                         </button>
                       </article>
@@ -339,9 +397,9 @@ const Dashboard: React.FC = () => {
                 </div>
               </section>
 
-              <aside className={styles.dashboardSidebar}>
-                <section className={styles.recentOrdersSection}>
-                  <h2 className={styles.sectionTitleSmall}>Recent Orders</h2>
+              <aside className={styles.dashboardSidebar} aria-label="Recent orders and health stats">
+                <section className={styles.recentOrdersSection} aria-labelledby="orders-title">
+                  <h2 id="orders-title" className={styles.sectionTitleSmall}>Recent Orders</h2>
                   <div className={styles.ordersList}>
                     {orders.map((order) => (
                       <article key={order.id} className={styles.orderItem}>
@@ -364,17 +422,17 @@ const Dashboard: React.FC = () => {
                       </article>
                     ))}
                   </div>
-                  <button className={styles.viewAllButtonSecondary}>
+                  <button className={styles.viewAllButtonSecondary} aria-label="View all orders">
                     View All Orders
-                    <ChevronRight size={16} />
+                    <ChevronRight size={16} aria-hidden="true" />
                   </button>
                 </section>
 
-                <section className={styles.healthStatsSection}>
-                  <h2 className={styles.sectionTitleSmall}>Health Overview</h2>
+                <section className={styles.healthStatsSection} aria-labelledby="health-title">
+                  <h2 id="health-title" className={styles.sectionTitleSmall}>Health Overview</h2>
                   <div className={styles.statsList}>
                     <div className={styles.statItem}>
-                      <div className={styles.statIcon}>
+                      <div className={styles.statIcon} aria-hidden="true">
                         <FileText size={20} />
                       </div>
                       <div className={styles.statContent}>
@@ -383,7 +441,7 @@ const Dashboard: React.FC = () => {
                       </div>
                     </div>
                     <div className={styles.statItem}>
-                      <div className={styles.statIcon}>
+                      <div className={styles.statIcon} aria-hidden="true">
                         <Package size={20} />
                       </div>
                       <div className={styles.statContent}>
@@ -392,7 +450,7 @@ const Dashboard: React.FC = () => {
                       </div>
                     </div>
                     <div className={styles.statItem}>
-                      <div className={styles.statIcon}>
+                      <div className={styles.statIcon} aria-hidden="true">
                         <CheckCircle2 size={20} />
                       </div>
                       <div className={styles.statContent}>
@@ -411,11 +469,11 @@ const Dashboard: React.FC = () => {
 
         {activeRole === "admin" && user.role === "admin" && (
           <>
-            <section className={styles.section}>
-              <h2 className={styles.sectionTitle}>System Overview</h2>
+            <section className={styles.section} aria-labelledby="system-overview-title">
+              <h2 id="system-overview-title" className={styles.sectionTitle}>System Overview</h2>
               <div className={styles.adminStatsGrid}>
                 <div className={styles.adminStatCard}>
-                  <div className={styles.adminStatIcon}>
+                  <div className={styles.adminStatIcon} aria-hidden="true">
                     <Users size={24} />
                   </div>
                   <div className={styles.adminStatContent}>
@@ -423,11 +481,11 @@ const Dashboard: React.FC = () => {
                     <span className={styles.adminStatLabel}>Active Patients</span>
                   </div>
                   <div className={styles.adminStatTrend}>
-                    <span className={styles.trendUp}>+12%</span>
+                    <span className={styles.trendUp} aria-label="up 12 percent">+12%</span>
                   </div>
                 </div>
                 <div className={styles.adminStatCard}>
-                  <div className={styles.adminStatIcon}>
+                  <div className={styles.adminStatIcon} aria-hidden="true">
                     <Pill size={24} />
                   </div>
                   <div className={styles.adminStatContent}>
@@ -435,11 +493,11 @@ const Dashboard: React.FC = () => {
                     <span className={styles.adminStatLabel}>Pending Prescriptions</span>
                   </div>
                   <div className={styles.adminStatTrend}>
-                    <span className={styles.trendNeutral}>-</span>
+                    <span className={styles.trendNeutral} aria-label="no change">-</span>
                   </div>
                 </div>
                 <div className={styles.adminStatCard}>
-                  <div className={styles.adminStatIcon}>
+                  <div className={styles.adminStatIcon} aria-hidden="true">
                     <Package size={24} />
                   </div>
                   <div className={styles.adminStatContent}>
@@ -447,11 +505,11 @@ const Dashboard: React.FC = () => {
                     <span className={styles.adminStatLabel}>Orders Today</span>
                   </div>
                   <div className={styles.adminStatTrend}>
-                    <span className={styles.trendUp}>+8%</span>
+                    <span className={styles.trendUp} aria-label="up 8 percent">+8%</span>
                   </div>
                 </div>
                 <div className={styles.adminStatCard}>
-                  <div className={styles.adminStatIcon}>
+                  <div className={styles.adminStatIcon} aria-hidden="true">
                     <DollarSign size={24} />
                   </div>
                   <div className={styles.adminStatContent}>
@@ -459,17 +517,17 @@ const Dashboard: React.FC = () => {
                     <span className={styles.adminStatLabel}>Revenue Today</span>
                   </div>
                   <div className={styles.adminStatTrend}>
-                    <span className={styles.trendUp}>+15%</span>
+                    <span className={styles.trendUp} aria-label="up 15 percent">+15%</span>
                   </div>
                 </div>
               </div>
             </section>
 
-            <section className={styles.section}>
-              <h2 className={styles.sectionTitle}>Administrative Controls</h2>
+            <section className={styles.section} aria-labelledby="admin-controls-title">
+              <h2 id="admin-controls-title" className={styles.sectionTitle}>Administrative Controls</h2>
               <div className={styles.adminGrid}>
                 <article className={styles.adminCard}>
-                  <div className={styles.adminCardIcon}>
+                  <div className={styles.adminCardIcon} aria-hidden="true">
                     <Pill size={28} />
                   </div>
                   <h3 className={styles.adminCardTitle}>Prescription Management</h3>
@@ -479,14 +537,14 @@ const Dashboard: React.FC = () => {
                   <div className={styles.adminCardActions}>
                     <button className={styles.buttonPrimary}>
                       Review Prescriptions
-                      <ChevronRight size={16} />
+                      <ChevronRight size={16} aria-hidden="true" />
                     </button>
                     <button className={styles.buttonSecondary}>Download Reports</button>
                   </div>
                 </article>
 
                 <article className={styles.adminCard}>
-                  <div className={styles.adminCardIcon}>
+                  <div className={styles.adminCardIcon} aria-hidden="true">
                     <ShoppingBag size={28} />
                   </div>
                   <h3 className={styles.adminCardTitle}>Inventory & Products</h3>
@@ -496,14 +554,14 @@ const Dashboard: React.FC = () => {
                   <div className={styles.adminCardActions}>
                     <button className={styles.buttonPrimary}>
                       Manage Inventory
-                      <ChevronRight size={16} />
+                      <ChevronRight size={16} aria-hidden="true" />
                     </button>
                     <button className={styles.buttonSecondary}>Update Pricing</button>
                   </div>
                 </article>
 
                 <article className={styles.adminCard}>
-                  <div className={styles.adminCardIcon}>
+                  <div className={styles.adminCardIcon} aria-hidden="true">
                     <Package size={28} />
                   </div>
                   <h3 className={styles.adminCardTitle}>Order Processing</h3>
@@ -513,14 +571,14 @@ const Dashboard: React.FC = () => {
                   <div className={styles.adminCardActions}>
                     <button className={styles.buttonPrimary}>
                       Process Orders
-                      <ChevronRight size={16} />
+                      <ChevronRight size={16} aria-hidden="true" />
                     </button>
                     <button className={styles.buttonSecondary}>Track Shipments</button>
                   </div>
                 </article>
 
                 <article className={styles.adminCard}>
-                  <div className={styles.adminCardIcon}>
+                  <div className={styles.adminCardIcon} aria-hidden="true">
                     <Users size={28} />
                   </div>
                   <h3 className={styles.adminCardTitle}>Patient Management</h3>
@@ -530,14 +588,14 @@ const Dashboard: React.FC = () => {
                   <div className={styles.adminCardActions}>
                     <button className={styles.buttonPrimary}>
                       View Patients
-                      <ChevronRight size={16} />
+                      <ChevronRight size={16} aria-hidden="true" />
                     </button>
                     <button className={styles.buttonSecondary}>Export Data</button>
                   </div>
                 </article>
 
                 <article className={styles.adminCard}>
-                  <div className={styles.adminCardIcon}>
+                  <div className={styles.adminCardIcon} aria-hidden="true">
                     <BarChart3 size={28} />
                   </div>
                   <h3 className={styles.adminCardTitle}>Analytics & Reports</h3>
@@ -547,14 +605,14 @@ const Dashboard: React.FC = () => {
                   <div className={styles.adminCardActions}>
                     <button className={styles.buttonPrimary}>
                       View Analytics
-                      <ChevronRight size={16} />
+                      <ChevronRight size={16} aria-hidden="true" />
                     </button>
                     <button className={styles.buttonSecondary}>Generate Report</button>
                   </div>
                 </article>
 
                 <article className={styles.adminCard}>
-                  <div className={styles.adminCardIcon}>
+                  <div className={styles.adminCardIcon} aria-hidden="true">
                     <Settings size={28} />
                   </div>
                   <h3 className={styles.adminCardTitle}>System Settings</h3>
@@ -564,7 +622,7 @@ const Dashboard: React.FC = () => {
                   <div className={styles.adminCardActions}>
                     <button className={styles.buttonPrimary}>
                       System Settings
-                      <ChevronRight size={16} />
+                      <ChevronRight size={16} aria-hidden="true" />
                     </button>
                     <button className={styles.buttonSecondary}>View Logs</button>
                   </div>

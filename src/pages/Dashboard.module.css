@@ -1,20 +1,24 @@
-/* Dashboard.module.css */
+/* Dashboard.module.css - Optimized */
 
+/* ============================================
+   CSS CUSTOM PROPERTIES
+   ============================================ */
 :root {
+  /* Colors - Primary */
   --primary-600: #0066cc;
   --primary-700: #0052a3;
   --primary-50: #e6f2ff;
   --primary-100: #b3d9ff;
   
+  /* Colors - Semantic */
   --success-600: #059669;
   --success-50: #d1fae5;
-  
   --warning-600: #d97706;
   --warning-50: #fef3c7;
-  
   --danger-600: #dc2626;
   --danger-50: #fee2e2;
   
+  /* Colors - Neutral */
   --gray-50: #f9fafb;
   --gray-100: #f3f4f6;
   --gray-200: #e5e7eb;
@@ -25,23 +29,34 @@
   --gray-700: #374151;
   --gray-800: #1f2937;
   --gray-900: #111827;
-  
   --white: #ffffff;
+  
+  /* Layout */
+  --sidebar-width: 280px;
+  --header-height: 72px;
+  
+  /* Border Radius */
+  --border-radius-sm: 8px;
   --border-radius: 12px;
   --border-radius-lg: 16px;
-  --border-radius-sm: 8px;
+  
+  /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  /* Transitions */
   --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  /* Header/Footer offset used to keep sidebar & overlay between them.
-     Adjust these to match your actual header/footer heights. */
-  --header-height: 88px;
-  --footer-height: 88px;
+  --transition-transform: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-* {
+/* ============================================
+   GLOBAL RESET & BASE STYLES
+   ============================================ */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -54,52 +69,61 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ============================================
+   LAYOUT - CONTAINER & OVERLAY
+   ============================================ */
 .container {
   display: flex;
   min-height: 100vh;
   background: var(--gray-50);
+  position: relative;
 }
 
-/* Sidebar */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 800;
+  opacity: 0;
+  animation: fadeIn 0.3s forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   SIDEBAR
+   ============================================ */
 .sidebar {
-  width: 280px;
+  width: var(--sidebar-width);
   background: var(--white);
   border-right: 1px solid var(--gray-200);
   display: flex;
   flex-direction: column;
-  position: sticky;
+  position: absolute;
   left: 0;
   top: 0;
-/* Constrain between header & footer so overlay won't cover them */
-  top: var(--header-height);
-   height: auto; /* with top/bottom specified, height is computed */
-  z-index: 750;
-  transition: var(--transition);
-}
-
-
-/* Sidebar (desktop) - fixed but limited between header & footer */
-.sidebar {
-
-  /* Constrain between header & footer so overlay won't cover them */
-  top: var(--header-height);
-  bottom: var(--footer-height);
- 
-    transition: transform 0.28s cubic-bezier(0.2, 0.9, 0.2, 1), box-shadow 0.28s;
+  bottom: 0;
+  z-index: 900;
+  transition: var(--transition-transform);
   box-shadow: var(--shadow-sm);
-  
-  will-change: transform;
-}
-.sidebarClose {
-  display: none;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .sidebarHeader {
-  padding: 24px;
+  padding: 20px 24px;
   border-bottom: 1px solid var(--gray-100);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-shrink: 0;
 }
 
 .logo {
@@ -118,6 +142,7 @@ body {
   justify-content: center;
   color: var(--white);
   box-shadow: var(--shadow-md);
+  flex-shrink: 0;
 }
 
 .logoText {
@@ -127,6 +152,32 @@ body {
   letter-spacing: -0.5px;
 }
 
+.sidebarClose {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: var(--gray-600);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.sidebarClose:hover {
+  background: var(--gray-100);
+  color: var(--gray-900);
+}
+
+.sidebarClose:focus-visible {
+  outline: 2px solid var(--primary-600);
+  outline-offset: 2px;
+}
+
+/* Sidebar Navigation */
 .sidebarNav {
   flex: 1;
   padding: 16px;
@@ -139,16 +190,17 @@ body {
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
   border: none;
   background: transparent;
   color: var(--gray-600);
   font-size: 15px;
   font-weight: 500;
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--border-radius-lg);
   cursor: pointer;
   transition: var(--transition);
   position: relative;
+  text-align: left;
 }
 
 .navItem:hover {
@@ -156,9 +208,13 @@ body {
   color: var(--gray-900);
 }
 
+.navItem:focus-visible {
+  outline: 2px solid var(--primary-600);
+  outline-offset: -2px;
+}
+
 .navItem span {
   flex: 1;
-  text-align: left;
 }
 
 .navArrow {
@@ -166,6 +222,7 @@ body {
   opacity: 0;
   transform: translateX(-4px);
   transition: var(--transition);
+  flex-shrink: 0;
 }
 
 .navItem:hover .navArrow {
@@ -185,9 +242,11 @@ body {
   color: var(--primary-600);
 }
 
+/* Sidebar Footer */
 .sidebarFooter {
   padding: 16px;
   border-top: 1px solid var(--gray-100);
+  flex-shrink: 0;
 }
 
 .userProfile {
@@ -244,6 +303,7 @@ body {
   border-radius: var(--border-radius-sm);
   cursor: pointer;
   transition: var(--transition);
+  flex-shrink: 0;
 }
 
 .logoutButton:hover {
@@ -251,19 +311,30 @@ body {
   color: var(--danger-600);
 }
 
-/* Main Content */
+.logoutButton:focus-visible {
+  outline: 2px solid var(--primary-600);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   MAIN CONTENT AREA
+   ============================================ */
 .main {
   flex: 1;
-  margin-left: 280px;
+  margin-left: var(--sidebar-width);
   padding: 24px;
-  max-width: 1600px;
+  max-width: calc(100% - var(--sidebar-width));
   width: 100%;
+  min-height: 100vh;
 }
 
 .menuButton {
   display: none;
 }
 
+/* ============================================
+   HEADER
+   ============================================ */
 .header {
   margin-bottom: 32px;
 }
@@ -273,10 +344,11 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
+  flex-wrap: wrap;
 }
 
 .greeting {
-  font-size: 32px;
+  font-size: clamp(24px, 5vw, 32px);
   font-weight: 700;
   color: var(--gray-900);
   margin-bottom: 4px;
@@ -284,13 +356,14 @@ body {
 }
 
 .subGreeting {
-  font-size: 16px;
+  font-size: clamp(14px, 3vw, 16px);
   color: var(--gray-600);
 }
 
 .headerActions {
   display: flex;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .headerButton {
@@ -307,6 +380,7 @@ body {
   cursor: pointer;
   transition: var(--transition);
   box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
 }
 
 .headerButton:hover {
@@ -317,30 +391,38 @@ body {
   box-shadow: var(--shadow-md);
 }
 
+.headerButton:focus-visible {
+  outline: 2px solid var(--primary-600);
+  outline-offset: 2px;
+}
+
 .notificationBadge {
   position: absolute;
   top: -4px;
   right: -4px;
-  width: 20px;
+  min-width: 20px;
   height: 20px;
+  padding: 0 6px;
   background: var(--danger-600);
   color: var(--white);
   font-size: 11px;
   font-weight: 700;
-  border-radius: 50%;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 2px solid var(--white);
 }
 
-/* Sections */
+/* ============================================
+   SECTIONS
+   ============================================ */
 .section {
   margin-bottom: 32px;
 }
 
 .sectionTitle {
-  font-size: 20px;
+  font-size: clamp(18px, 4vw, 20px);
   font-weight: 700;
   color: var(--gray-900);
   margin-bottom: 20px;
@@ -348,14 +430,14 @@ body {
 }
 
 .sectionTitleLarge {
-  font-size: 24px;
+  font-size: clamp(20px, 4.5vw, 24px);
   font-weight: 700;
   color: var(--gray-900);
   letter-spacing: -0.5px;
 }
 
 .sectionTitleSmall {
-  font-size: 18px;
+  font-size: clamp(16px, 3.5vw, 18px);
   font-weight: 700;
   color: var(--gray-900);
   margin-bottom: 16px;
@@ -367,12 +449,16 @@ body {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-/* Quick Actions */
+/* ============================================
+   QUICK ACTIONS
+   ============================================ */
 .quickActionsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
 }
 
@@ -389,6 +475,7 @@ body {
   transition: var(--transition);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
+  min-height: 140px;
 }
 
 .quickActionCard::before {
@@ -414,6 +501,11 @@ body {
   transform: translateY(-2px);
 }
 
+.quickActionCard:focus-visible {
+  outline: 2px solid var(--primary-600);
+  outline-offset: 2px;
+}
+
 .quickActionIcon {
   width: 48px;
   height: 48px;
@@ -425,6 +517,7 @@ body {
   border-radius: var(--border-radius);
   margin-bottom: 16px;
   transition: var(--transition);
+  flex-shrink: 0;
 }
 
 .quickActionCard:hover .quickActionIcon {
@@ -438,6 +531,7 @@ body {
   font-weight: 600;
   color: var(--gray-900);
   margin-bottom: 8px;
+  line-height: 1.4;
 }
 
 .quickActionArrow {
@@ -455,14 +549,18 @@ body {
   color: var(--primary-600);
 }
 
-/* Dashboard Grid */
+/* ============================================
+   DASHBOARD GRID
+   ============================================ */
 .dashboardGrid {
   display: grid;
-  grid-template-columns: 1fr 380px;
+  grid-template-columns: 1fr;
   gap: 24px;
 }
 
-/* Prescriptions */
+/* ============================================
+   PRESCRIPTIONS
+   ============================================ */
 .prescriptionsSection {
   background: transparent;
 }
@@ -491,6 +589,7 @@ body {
   align-items: center;
   gap: 12px;
   margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 
 .prescriptionIconWrapper {
@@ -502,6 +601,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .prescriptionId {
@@ -512,16 +612,17 @@ body {
 }
 
 .prescriptionName {
-  font-size: 18px;
+  font-size: clamp(16px, 3.5vw, 18px);
   font-weight: 700;
   color: var(--gray-900);
   margin-bottom: 20px;
   letter-spacing: -0.3px;
+  line-height: 1.3;
 }
 
 .prescriptionDetails {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 16px;
   margin-bottom: 20px;
   padding: 16px;
@@ -584,7 +685,14 @@ body {
   box-shadow: var(--shadow-md);
 }
 
-/* Dashboard Sidebar */
+.refillButton:focus-visible {
+  outline: 2px solid var(--primary-700);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   DASHBOARD SIDEBAR (ORDERS & HEALTH STATS)
+   ============================================ */
 .dashboardSidebar {
   display: flex;
   flex-direction: column;
@@ -600,6 +708,7 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
+/* Orders */
 .ordersList {
   display: flex;
   flex-direction: column;
@@ -619,11 +728,18 @@ body {
   background: var(--gray-100);
 }
 
+.orderItem:focus-visible {
+  outline: 2px solid var(--primary-600);
+  outline-offset: -2px;
+}
+
 .orderItemHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .orderItemId {
@@ -642,6 +758,7 @@ body {
   font-weight: 600;
   border-radius: 6px;
   text-transform: capitalize;
+  white-space: nowrap;
 }
 
 .orderStatusDelivered {
@@ -663,6 +780,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
 }
 
 .orderDate {
@@ -674,40 +792,6 @@ body {
   font-size: 15px;
   font-weight: 700;
   color: var(--gray-900);
-}
-
-.viewAllButton,
-.viewAllButtonSecondary {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: var(--border-radius);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.viewAllButton {
-  background: transparent;
-  color: var(--primary-600);
-}
-
-.viewAllButton:hover {
-  background: var(--primary-50);
-}
-
-.viewAllButtonSecondary {
-  width: 100%;
-  background: var(--gray-100);
-  color: var(--gray-700);
-}
-
-.viewAllButtonSecondary:hover {
-  background: var(--gray-200);
 }
 
 /* Health Stats */
@@ -743,10 +827,12 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  flex: 1;
+  min-width: 0;
 }
 
 .statValue {
-  font-size: 24px;
+  font-size: clamp(20px, 4vw, 24px);
   font-weight: 700;
   color: var(--gray-900);
   line-height: 1;
@@ -758,10 +844,104 @@ body {
   font-weight: 500;
 }
 
-/* Admin Dashboard */
+/* ============================================
+   BUTTONS
+   ============================================ */
+.viewAllButton,
+.viewAllButtonSecondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.viewAllButton {
+  background: transparent;
+  color: var(--primary-600);
+}
+
+.viewAllButton:hover {
+  background: var(--primary-50);
+}
+
+.viewAllButton:focus-visible {
+  outline: 2px solid var(--primary-600);
+  outline-offset: 2px;
+}
+
+.viewAllButtonSecondary {
+  width: 100%;
+  background: var(--gray-100);
+  color: var(--gray-700);
+}
+
+.viewAllButtonSecondary:hover {
+  background: var(--gray-200);
+}
+
+.viewAllButtonSecondary:focus-visible {
+  outline: 2px solid var(--primary-600);
+  outline-offset: 2px;
+}
+
+.buttonPrimary,
+.buttonSecondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.buttonPrimary {
+  background: var(--primary-600);
+  color: var(--white);
+}
+
+.buttonPrimary:hover {
+  background: var(--primary-700);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.buttonPrimary:focus-visible {
+  outline: 2px solid var(--primary-700);
+  outline-offset: 2px;
+}
+
+.buttonSecondary {
+  background: var(--gray-100);
+  color: var(--gray-700);
+}
+
+.buttonSecondary:hover {
+  background: var(--gray-200);
+}
+
+.buttonSecondary:focus-visible {
+  outline: 2px solid var(--primary-600);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   ADMIN DASHBOARD
+   ============================================ */
 .adminStatsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
 }
 
@@ -791,6 +971,7 @@ body {
   background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
   color: var(--primary-600);
   border-radius: var(--border-radius-lg);
+  flex-shrink: 0;
 }
 
 .adminStatContent {
@@ -800,7 +981,7 @@ body {
 }
 
 .adminStatValue {
-  font-size: 32px;
+  font-size: clamp(24px, 5vw, 32px);
   font-weight: 700;
   color: var(--gray-900);
   line-height: 1;
@@ -832,10 +1013,9 @@ body {
   color: var(--gray-400);
 }
 
-/* Admin Grid */
 .adminGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 24px;
 }
 
@@ -866,10 +1046,11 @@ body {
   background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
   color: var(--primary-600);
   border-radius: var(--border-radius-lg);
+  flex-shrink: 0;
 }
 
 .adminCardTitle {
-  font-size: 20px;
+  font-size: clamp(18px, 3.5vw, 20px);
   font-weight: 700;
   color: var(--gray-900);
   letter-spacing: -0.3px;
@@ -888,42 +1069,9 @@ body {
   margin-top: auto;
 }
 
-.buttonPrimary,
-.buttonSecondary {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 20px;
-  border: none;
-  border-radius: var(--border-radius);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.buttonPrimary {
-  background: var(--primary-600);
-  color: var(--white);
-}
-
-.buttonPrimary:hover {
-  background: var(--primary-700);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.buttonSecondary {
-  background: var(--gray-100);
-  color: var(--gray-700);
-}
-
-.buttonSecondary:hover {
-  background: var(--gray-200);
-}
-
-/* Loading */
+/* ============================================
+   LOADING & LOGIN STATES
+   ============================================ */
 .loadingWrapper {
   display: flex;
   flex-direction: column;
@@ -931,6 +1079,7 @@ body {
   justify-content: center;
   min-height: 100vh;
   gap: 24px;
+  padding: 20px;
 }
 
 .loadingSpinner {
@@ -942,26 +1091,20 @@ body {
   animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .loadingText {
   font-size: 16px;
   color: var(--gray-600);
   font-weight: 500;
+  text-align: center;
 }
 
-/* Login Prompt */
 .loginPrompt {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: 40px;
+  padding: 40px 20px;
   text-align: center;
   gap: 24px;
 }
@@ -979,14 +1122,14 @@ body {
 }
 
 .loginTitle {
-  font-size: 28px;
+  font-size: clamp(24px, 5vw, 28px);
   font-weight: 700;
   color: var(--gray-900);
   letter-spacing: -0.5px;
 }
 
 .loginMessage {
-  font-size: 16px;
+  font-size: clamp(14px, 3vw, 16px);
   color: var(--gray-600);
   max-width: 480px;
   line-height: 1.6;
@@ -1015,46 +1158,65 @@ body {
   box-shadow: var(--shadow-lg);
 }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
+.loginButton:focus-visible {
+  outline: 2px solid var(--primary-700);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Large Desktop (1200px+) */
+@media (min-width: 1200px) {
+  .dashboardGrid {
+    grid-template-columns: 1fr 380px;
+  }
+  
+  .main {
+    max-width: 1600px;
+  }
+}
+
+/* Tablet Landscape & Small Desktop (768px - 1199px) */
+@media (min-width: 768px) and (max-width: 1199px) {
   .dashboardGrid {
     grid-template-columns: 1fr;
   }
   
-  .adminGrid {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  .quickActionsGrid {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
-@media (max-width: 768px) {
+/* Tablet Portrait & Mobile (max 1023px) */
+@media (max-width: 1023px) {
+  :root {
+    --sidebar-width: 280px;
+  }
+  
   .sidebar {
     transform: translateX(-100%);
+    box-shadow: none;
   }
   
   .sidebarOpen {
     transform: translateX(0);
+    box-shadow: var(--shadow-xl);
+  }
+  
+  .overlay {
+    display: block;
   }
   
   .sidebarClose {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border: none;
-    background: transparent;
-    color: var(--gray-600);
-    border-radius: var(--border-radius);
-    cursor: pointer;
-  }
-  
-  .sidebarClose:hover {
-    background: var(--gray-100);
   }
   
   .main {
     margin-left: 0;
-    padding: 16px;
+    max-width: 100%;
+    padding: 20px;
   }
   
   .menuButton {
@@ -1070,6 +1232,7 @@ body {
     cursor: pointer;
     margin-bottom: 16px;
     box-shadow: var(--shadow-sm);
+    flex-shrink: 0;
   }
   
   .menuButton:hover {
@@ -1077,20 +1240,27 @@ body {
     border-color: var(--gray-300);
   }
   
-  .greeting {
-    font-size: 24px;
+  .menuButton:focus-visible {
+    outline: 2px solid var(--primary-600);
+    outline-offset: 2px;
+  }
+  
+  .headerContent {
+    gap: 16px;
   }
   
   .quickActionsGrid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
   
-  .prescriptionDetails {
-    grid-template-columns: 1fr;
+  .quickActionCard {
+    padding: 20px;
+    min-height: 120px;
   }
   
   .adminStatsGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
   
   .adminGrid {
@@ -1098,9 +1268,24 @@ body {
   }
 }
 
-@media (max-width: 480px) {
-  .quickActionsGrid {
-    grid-template-columns: 1fr;
+/* Mobile (max 767px) */
+@media (max-width: 767px) {
+  :root {
+    --sidebar-width: 85%;
+    --header-height: 64px;
+  }
+  
+  .sidebar {
+    width: 85%;
+    max-width: 320px;
+  }
+  
+  .main {
+    padding: 16px;
+  }
+  
+  .header {
+    margin-bottom: 24px;
   }
   
   .headerActions {
@@ -1111,11 +1296,98 @@ body {
     width: 40px;
     height: 40px;
   }
-  /* on very small screens, use full-screen overlay since header/footer small */
-  :root {
-    --header-height: 64px;
-    --footer-height: 64px;
+  
+  .section {
+    margin-bottom: 24px;
+  }
+  
+  .quickActionsGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .quickActionCard {
+    padding: 20px;
+    min-height: 110px;
+  }
+  
+  .prescriptionCard {
+    padding: 20px;
+  }
+  
+  .prescriptionDetails {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .recentOrdersSection,
+  .healthStatsSection {
+    padding: 20px;
+  }
+  
+  .adminStatsGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .adminStatCard {
+    padding: 20px;
+  }
+  
+  .adminCard {
+    padding: 24px;
   }
 }
 
+/* Small Mobile (max 480px) */
+@media (max-width: 480px) {
+  .headerContent {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .headerActions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  .sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .viewAllButton {
+    align-self: flex-start;
+  }
+}
 
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .overlay {
+    animation: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .navItem:hover,
+  .navItemActive {
+    border: 2px solid currentColor;
+  }
+  
+  .quickActionCard:hover {
+    border: 2px solid var(--primary-600);
+  }
+}
