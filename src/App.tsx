@@ -155,8 +155,7 @@ const HomePage: FC = memo(() => (
     <Hero />
     <ProductCarousel />
     <PromoBanners />
-     <Shop />
-    <Offers1 />   
+     <Shop />    
     <WellnessBanner />
     <Suspense fallback={<LoadingFallback />}>
       <Offers />
