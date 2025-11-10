@@ -9,7 +9,9 @@ import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ShoppingCart, ChevronLeft } from "lucide-react";
 import toast from "react-hot-toast";
-import styles from "./Offers1D.module.css";
+import styles from "./Beauty.module.css";
+
+
 
 import { useCart } from "../context/CartContext";
 import {

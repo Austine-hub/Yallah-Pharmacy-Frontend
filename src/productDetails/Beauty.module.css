@@ -1,0 +1,433 @@
+/* ===============================================================
+   🎨 Offers1D.module.css — Optimized Product Details Styles
+   ===============================================================
+   Modern, accessible, mobile-first CSS module
+   Reference: Best practices from Shopify, Sephora, Amazon
+   ============================================================== */
+
+/* ===============================================================
+   🎯 Base Section Layout
+   ============================================================== */
+
+.detailsSection {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+  min-height: 100vh;
+}
+
+@media (min-width: 768px) {
+  .detailsSection {
+    padding: 2.5rem 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .detailsSection {
+    padding: 3rem 2.5rem;
+  }
+}
+
+/* ===============================================================
+   🔙 Back Navigation Link
+   ============================================================== */
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: #374151;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 0.5rem 0;
+  margin-bottom: 1.5rem;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.backLink:hover {
+  color: #111827;
+  transform: translateX(-4px);
+}
+
+.backLink:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+@media (min-width: 768px) {
+  .backLink {
+    margin-bottom: 2rem;
+    font-size: 1rem;
+  }
+}
+
+/* ===============================================================
+   📦 Main Product Container
+   ============================================================== */
+
+.detailsContainer {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 768px) {
+  .detailsContainer {
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    padding: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .detailsContainer {
+    grid-template-columns: 1.2fr 1fr;
+    gap: 4rem;
+    padding: 3rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+  }
+}
+
+/* ===============================================================
+   🖼️ Product Image
+   ============================================================== */
+
+.productImage {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #f9fafb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+@media (min-width: 768px) {
+  .productImage {
+    aspect-ratio: 4 / 5;
+    border-radius: 12px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .productImage {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* ===============================================================
+   ℹ️ Product Information Section
+   ============================================================== */
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .info {
+    gap: 1.25rem;
+    justify-content: center;
+  }
+}
+
+/* ===============================================================
+   📝 Typography Hierarchy
+   ============================================================== */
+
+.name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #111827;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+@media (min-width: 768px) {
+  .name {
+    font-size: 1.875rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .name {
+    font-size: 2.25rem;
+  }
+}
+
+.brand {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+@media (min-width: 768px) {
+  .brand {
+    font-size: 1.0625rem;
+  }
+}
+
+.description {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: #4b5563;
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .description {
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+}
+
+@media (min-width: 1024px) {
+  .description {
+    font-size: 1.0625rem;
+  }
+}
+
+.price {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #dc2626;
+  margin: 0.5rem 0 0;
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 768px) {
+  .price {
+    font-size: 2rem;
+    margin: 0.75rem 0 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .price {
+    font-size: 2.25rem;
+  }
+}
+
+/* ===============================================================
+   🛒 Add to Cart Button
+   ============================================================== */
+
+.cartButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  margin-top: 1rem;
+  background: #111827;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cartButton:hover {
+  background: #1f2937;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.cartButton:active {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.cartButton:focus-visible {
+  outline: 3px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+@media (min-width: 768px) {
+  .cartButton {
+    width: auto;
+    min-width: 220px;
+    padding: 1.125rem 2rem;
+    font-size: 1.0625rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cartButton {
+    padding: 1.25rem 2.5rem;
+  }
+}
+
+/* ===============================================================
+   ❌ Not Found State
+   ============================================================== */
+
+.notFound {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.notFound h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .notFound h2 {
+    font-size: 2rem;
+  }
+}
+
+.notFound .backLink {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: #f3f4f6;
+  border-radius: 8px;
+  color: #374151;
+  font-weight: 600;
+}
+
+.notFound .backLink:hover {
+  background: #e5e7eb;
+  transform: none;
+}
+
+/* ===============================================================
+   ♿ Accessibility Enhancements
+   ============================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .backLink,
+  .cartButton,
+  .productImage {
+    transition: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .cartButton {
+    border: 2px solid currentColor;
+  }
+  
+  .backLink:focus-visible,
+  .cartButton:focus-visible {
+    outline-width: 4px;
+  }
+}
+
+/* ===============================================================
+   🌙 Dark Mode Support (Optional)
+   ============================================================== */
+
+@media (prefers-color-scheme: dark) {
+  .detailsContainer {
+    background: #1f2937;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  .name {
+    color: #f9fafb;
+  }
+
+  .brand {
+    color: #9ca3af;
+  }
+
+  .description {
+    color: #d1d5db;
+  }
+
+  .price {
+    color: #f87171;
+  }
+
+  .backLink {
+    color: #d1d5db;
+  }
+
+  .backLink:hover {
+    color: #f9fafb;
+  }
+
+  .cartButton {
+    background: #3b82f6;
+  }
+
+  .cartButton:hover {
+    background: #2563eb;
+  }
+
+  .productImage {
+    background: #111827;
+  }
+
+  .notFound h2 {
+    color: #f9fafb;
+  }
+
+  .notFound .backLink {
+    background: #374151;
+    color: #d1d5db;
+  }
+
+  .notFound .backLink:hover {
+    background: #4b5563;
+  }
+}
+
+/* ===============================================================
+   📱 Touch Device Optimizations
+   ============================================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  .cartButton {
+    min-height: 48px;
+    padding: 1.125rem 1.5rem;
+  }
+
+  .backLink {
+    min-height: 44px;
+    padding: 0.625rem 0;
+  }
+}
+
+/* ===============================================================
+   🖨️ Print Styles
+   ============================================================== */
+
+@media print {
+  .backLink,
+  .cartButton {
+    display: none;
+  }
+
+  .detailsContainer {
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+  }
+
+  .price {
+    color: #000000;
+  }
+}

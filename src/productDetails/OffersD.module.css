@@ -798,6 +798,20 @@
   .sectionTitle {
     font-size: 22px;
   }
+
+  
+  .imageSection {
+  display: flex;
+  width: 94%;
+  height: 84%;
+
+}
+
+.mainImageContainer {
+  width: 90%;
+  height: 100%;
+}
+
 }
 
 @media (max-width: 480px) {
@@ -843,4 +857,19 @@
   .similarGrid {
     grid-template-columns: 1fr;
   }
+
+
+  .imageSection {
+  display: flex;
+  width: 94%;
+  height: 85%;
+
+}
+
+.mainImageContainer {
+  width: 90%;
+  height: 80%;
+}
+
+
 }
