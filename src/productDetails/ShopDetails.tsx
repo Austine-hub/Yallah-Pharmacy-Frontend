@@ -12,7 +12,7 @@ import {
   calculateSavings,
 } from "../data/ShopData"; // Unified import from the Model file
 import { useCart } from "../context/CartContext";
-import styles from "./Offers1D.module.css";
+import styles from "./ShopD.module.css";
 
 /**
  * 🛍️ ShopDetails Component
