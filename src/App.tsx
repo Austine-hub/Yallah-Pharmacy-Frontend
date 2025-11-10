@@ -1,5 +1,6 @@
+// src/App.tsx
 // ===============================================================
-// ✨ App.tsx — Optimized React Router v6+ Architecture (2025)
+// ✨ App.tsx — Refactored, cleaned and updated (2025)
 // ===============================================================
 
 import { Suspense, lazy, useEffect, type FC, memo } from "react";
@@ -11,44 +12,13 @@ import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./theme/ThemeProvider";
 import appStyles from "./App.module.css";
 
-// ===============================================================
-// 🎯 Core Layout Components (Always Loaded)
-// ===============================================================
+// Core layout (eager)
 import Header from "./components/header/Header";
 import Footer from "./components/footer/Footer";
 import BottomNav from "./components/footer/BottomNav";
 
-// ===============================================================
-// 🏠 Home Page Components (Eagerly Loaded for FCP)
-// ===============================================================
-import Hero from "./components/header/Hero";
-import Shop from "./components/Shop";
-import ShopByCategory from "./pages/ShopByCategory";
-import BestSellers from "./pages/BestSellers";
-import BeautyProducts from "./pages/BeautyProducts";
-import ProductCarousel from "./pages/ProductCarousel";
-import Offers1 from "./pages/Offers1";
-import PromoBanners from "./promo/PromoBanners";
-import WellnessBanner from "./promo/WellnessBanner";
-import BlogSection from "./blog/BlogSection";
-import BeautyDetails from "./productDetails/BeautyDetails";
-
-import OffersD from "./productDetails/OffersD";
-import Offers1D from "./productDetails/Offers1D";
-import ShopDetails from "./productDetails/ShopDetails";
-import HomeDetails from "./productDetails/HomeDetails";
-import BestSellersDetails from "./productDetails/BestSellersDetails";
-import SkincareDetails from "./productDetails/SkincareDetails";
-import VitaminDetails from "./productDetails/VitaminDetails";
-import OBGYNDetails from "./productDetails/ObgynDetails";
-import Diabetes from "./conditions/Diabetes";
-import DiabetesDetails from "./productDetails/DiabetesDetails";
-import RespiratoryDetails from "./productDetails/RespiratoryDetails";
-import HTNDetails from "./productDetails/HTNDetails";
-
-// ===============================================================
-// 🔄 Lazy-Loaded Routes (Code-Splitting for Performance)
-// ===============================================================
+// Lazy pages & route components
+const HomePage = lazy(() => import("./pages/Home"));
 const ProductsWrapper = lazy(() => import("./components/ProductsWrapper"));
 const Cart = lazy(() => import("./components/Cart"));
 const Wishlist = lazy(() => import("./components/WishList"));
@@ -95,14 +65,27 @@ const OurTeam = lazy(() => import("./outer/OurTeam"));
 const OurMissionVision = lazy(() => import("./outer/OurMissionVision"));
 const ContactUs = lazy(() => import("./outer/ContactUs"));
 
-// Offers Pages
+// Offers & Auxiliary
 const OffersWrapper = lazy(() => import("./pages/OffersWrapper"));
-const Offers = lazy(() => import("./pages/Offers"));
 const NewArrivals = lazy(() => import("./dropdowns/NewArrivals"));
 const NewArrivals1 = lazy(() => import("./dropdowns/NewArrivals2"));
 
+// Product detail pages
+const BeautyDetails = lazy(() => import("./productDetails/BeautyDetails"));
+const OffersD = lazy(() => import("./productDetails/OffersD"));
+const Offers1D = lazy(() => import("./productDetails/Offers1D"));
+const ShopDetails = lazy(() => import("./productDetails/ShopDetails"));
+const HomeDetails = lazy(() => import("./productDetails/HomeDetails"));
+const BestSellersDetails = lazy(() => import("./productDetails/BestSellersDetails"));
+const SkincareDetails = lazy(() => import("./productDetails/SkincareDetails"));
+const VitaminDetails = lazy(() => import("./productDetails/VitaminDetails"));
+const OBGYNDetails = lazy(() => import("./productDetails/ObgynDetails"));
+const DiabetesDetails = lazy(() => import("./productDetails/DiabetesDetails"));
+const RespiratoryDetails = lazy(() => import("./productDetails/RespiratoryDetails"));
+const HTNDetails = lazy(() => import("./productDetails/HTNDetails"));
+
 // ===============================================================
-// 🎨 Optimized Loading Component
+// 🎨 Small, accessible loading fallback
 // ===============================================================
 const LoadingFallback: FC = memo(() => (
   <div
@@ -120,8 +103,8 @@ const LoadingFallback: FC = memo(() => (
     <div style={{ textAlign: "center" }}>
       <div
         style={{
-          width: "48px",
-          height: "48px",
+          width: 48,
+          height: 48,
           border: "4px solid #f3f4f6",
           borderTopColor: "#7a0c2e",
           borderRadius: "50%",
@@ -131,48 +114,25 @@ const LoadingFallback: FC = memo(() => (
       />
       <p style={{ color: "#6b7280", fontSize: "0.95rem" }}>Loading content...</p>
     </div>
+    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
   </div>
 ));
 LoadingFallback.displayName = "LoadingFallback";
 
 // ===============================================================
-// 🧭 Scroll Restoration
+// 🧭 Scroll restoration
 // ===============================================================
 const ScrollToTop: FC = memo(() => {
   const { pathname } = useLocation();
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
+    window.scrollTo({ top: 0, behavior: "auto" });
   }, [pathname]);
   return null;
 });
 ScrollToTop.displayName = "ScrollToTop";
 
 // ===============================================================
-// 🏠 Home Page Component
-// ===============================================================
-const HomePage: FC = memo(() => (
-  <>
-    <Hero />
-    <ProductCarousel />
-    <PromoBanners />
-     <Shop />    
-    <WellnessBanner />
-    <Suspense fallback={<LoadingFallback />}>
-      <Offers />
-    </Suspense>
-    <BestSellers />
-    <Suspense fallback={<LoadingFallback />}>
-    </Suspense>
-    <Offers1 />
-    <ShopByCategory />
-    <BeautyProducts />
-    <BlogSection />
-  </>
-));
-HomePage.displayName = "HomePage";
-
-// ===============================================================
-// 🚫 404 Not Found Component
+// 🚫 NotFound component
 // ===============================================================
 const NotFound: FC = memo(() => (
   <motion.section
@@ -184,7 +144,7 @@ const NotFound: FC = memo(() => (
     style={{
       textAlign: "center",
       padding: "4rem 1.5rem",
-      maxWidth: "600px",
+      maxWidth: 600,
       margin: "0 auto",
       minHeight: "50vh",
       display: "flex",
@@ -203,14 +163,7 @@ const NotFound: FC = memo(() => (
     >
       404
     </h1>
-    <h2
-      style={{
-        fontSize: "clamp(1.25rem, 3vw, 1.5rem)",
-        marginBottom: "1rem",
-        color: "#374151",
-        fontWeight: 600,
-      }}
-    >
+    <h2 style={{ fontSize: "clamp(1.25rem, 3vw, 1.5rem)", marginBottom: "1rem", color: "#374151", fontWeight: 600 }}>
       Page Not Found
     </h2>
     <p style={{ color: "#6b7280", fontSize: "1rem", lineHeight: 1.6 }}>
@@ -221,7 +174,7 @@ const NotFound: FC = memo(() => (
 NotFound.displayName = "NotFound";
 
 // ===============================================================
-// 🏥 Root Application Component
+// 🏥 Root App
 // ===============================================================
 const App: FC = () => {
   return (
@@ -230,42 +183,35 @@ const App: FC = () => {
         <CartProvider>
           <ScrollToTop />
 
-          {/* === Global Toast Notifications === */}
-          <Toaster
-            position="top-center"
-            duration={3000}
-            closeButton
-            richColors
-            theme="light"
-          />
+          {/* Global toaster */}
+          <Toaster position="top-center" duration={3000} closeButton richColors theme="light" />
 
-          {/* === Fixed Header === */}
+          {/* Header (eager) */}
           <Header />
 
-          {/* === Main Content === */}
+          {/* Main */}
           <main className={appStyles.mainContent}>
             <Suspense fallback={<LoadingFallback />}>
               <Routes>
-                {/* === Home === */}
                 <Route path="/" element={<HomePage />} />
 
-                {/* === Product Routes === */}
+                {/* Products */}
                 <Route path="/products/prescription" element={<ProductsWrapper />} />
                 <Route path="/products/otc" element={<OTC />} />
                 <Route path="/products/supplements" element={<Vitamins />} />
                 <Route path="/products/equipment" element={<Equipment />} />
 
-                {/* === Category Routes === */}
-                <Route path="/categories/beauty-care-cosmetics" element={<BeautyProducts />} />
+                {/* Categories */}
+                <Route path="/categories/beauty-care-cosmetics" element={<SkinCare1 />} />
                 <Route path="/categories/vitamins-supplements" element={<Vitamins />} />
                 <Route path="/categories/medicine" element={<ProductsWrapper />} />
                 <Route path="/categories/skin-care" element={<SkinCare1 />} />
                 <Route path="/categories/general-hygiene" element={<Offers2 />} />
-                <Route path="/categories/home-healthcare" element={<ProductCarousel />} />
+                <Route path="/categories/home-healthcare" element={<Resp />} />
 
-                {/* === Condition Routes === */}
+                {/* Conditions */}
                 <Route path="/condition/heart" element={<CVS />} />
-                <Route path="/conditions/diabetes" element={<Diabetes/>} />
+                <Route path="/conditions/diabetes" element={<DM />} />
                 <Route path="/condition/women" element={<WomenHealthShop />} />
                 <Route path="/condition/men" element={<MensHealth />} />
                 <Route path="/conditions/htn" element={<HTN />} />
@@ -273,8 +219,8 @@ const App: FC = () => {
                 <Route path="/conditions/uti-infections" element={<UTI />} />
                 <Route path="/conditions/ear-eye-care" element={<EyeEar />} />
                 <Route path="/conditions/oral-hygiene" element={<OralCare />} />
-                
-                {/* === System Routes === */}
+
+                {/* Systems */}
                 <Route path="/system/respiratory" element={<Resp />} />
                 <Route path="/system/git" element={<GIT />} />
                 <Route path="/system/oral-hygiene" element={<OralCare />} />
@@ -286,67 +232,60 @@ const App: FC = () => {
                 <Route path="/system/skin-treatment" element={<SkinCare />} />
                 <Route path="/system/msk" element={<MSK />} />
 
-                {/* === Prescription Workflow === */}
+                {/* Prescription */}
                 <Route path="/prescription/upload" element={<PrescriptionUpload />} />
                 <Route path="/prescription/refill" element={<RequestPrescription />} />
                 <Route path="/prescription" element={<Prescription />} />
 
-                {/* === About Section === */}
+                {/* About */}
                 <Route path="/about/story" element={<OurStory />} />
                 <Route path="/about/team" element={<OurTeam />} />
                 <Route path="/about/vision" element={<OurMissionVision />} />
                 <Route path="/about-us" element={<AboutUs />} />
 
-                {/* === Contact === */}
                 <Route path="/contact-us" element={<ContactUs />} />
 
-                {/* === Shop === */}
-                <Route path="/shop" element={<Shop />} />
+                {/* Shop */}
+                <Route path="/shop" element={<ProductsWrapper />} />
 
-                {/* === Offers & Specials === */}
+                {/* Offers */}
                 <Route path="/offers" element={<OffersWrapper />} />
-                <Route path="/best-sellers" element={<BestSellers />} />
+                <Route path="/best-sellers" element={<NewArrivals />} />
                 <Route path="/new-arrivals" element={<NewArrivals />} />
                 <Route path="/trending" element={<NewArrivals1 />} />
 
-                {/* === Cart & Wishlist === */}
+                {/* Cart, Wishlist, Checkout */}
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/wishlist" element={<Wishlist />} />
-
-                {/* === Checkout === */}
                 <Route path="/checkout" element={<Order />} />
 
-                {/* === Authentication === */}
+                {/* Auth */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<SignUp />} />
 
-                {/* === 404 Not Found === */}
+                {/* Product details */}
+                <Route path="/beauty-products" element={<SkinCare1 />} />
+                <Route path="/product/:id" element={<BeautyDetails />} />
+                <Route path="/offers/:id" element={<OffersD />} />
+                <Route path="/offers1/:id" element={<Offers1D />} />
+                <Route path="/shop/:id" element={<ShopDetails />} />
+                <Route path="/home-product/:id" element={<HomeDetails />} />
+                <Route path="/bestsellers/:id" element={<BestSellersDetails />} />
+                <Route path="/skin/:id" element={<SkincareDetails />} />
+                <Route path="/vitamin-product/:id" element={<VitaminDetails />} />
+                <Route path="/sexual-product/:id" element={<OBGYNDetails />} />
+                <Route path="/diabetes/:id" element={<DiabetesDetails />} />
+                <Route path="/diabetes-product/:id" element={<DiabetesDetails />} />
+                <Route path="/respiratory/:id" element={<RespiratoryDetails />} />
+                <Route path="/htn-product/:id" element={<HTNDetails />} />
+
+                {/* 404 */}
                 <Route path="*" element={<NotFound />} />
-
-                {/* === Single Product Page Details === */}
-               <Route path="/beauty-products" element={<BeautyProducts />} />
-               <Route path="/product/:id" element={<BeautyDetails/>} />
-               <Route path="/offers/:id" element={<OffersD/>} />
-              <Route path="/offers1/:id" element={<Offers1D />} />
-              <Route path="/shop/:id" element={<ShopDetails />} />
-              <Route path="/home-product/:id" element={<HomeDetails/>} />
-              <Route path="/bestsellers/:id" element={<BestSellersDetails/>} />
-              <Route path="/skin/:id" element={<SkincareDetails/>} />
-              <Route path="/vitamin-product/:id" element={<VitaminDetails />} />
-              <Route path="/sexual-product/:id" element={<OBGYNDetails/>} />
-              <Route path="/diabetes/:id" element={<DiabetesDetails/>} />
-              <Route path="/diabetes-product/:id" element={<DiabetesDetails/>} />
-              <Route path="/respiratory/:id" element={<RespiratoryDetails/>} />
-              <Route path="/htn-product/:id" element={<HTNDetails/>} />
-                         
-
-
-
               </Routes>
             </Suspense>
           </main>
 
-          {/* === Global Footer === */}
+          {/* Footer (eager) */}
           <Footer />
           <BottomNav />
         </CartProvider>
@@ -356,3 +295,11 @@ const App: FC = () => {
 };
 
 export default App;
+
+
+
+
+
+
+
+
