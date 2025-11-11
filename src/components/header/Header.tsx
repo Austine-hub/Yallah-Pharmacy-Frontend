@@ -13,6 +13,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import styles from "./Header.module.css";
 import logo from "/icon.ico";
+import { useCartCount } from "../../context/CartContext";  // ✅ for live badge updates
+
 
 interface NavLink {
   label: string;
@@ -84,11 +86,13 @@ const NAVIGATION_SECTIONS: readonly NavSection[] = [
 const PHONE_NUMBER = "+254111054949";
 
 const Header: React.FC<HeaderProps> = ({ 
+
+  
   onSearch, 
-  cartCount = 0,
   deliveryLocation = "Nairobi"
 }) => {
   const navigate = useNavigate();
+  const cartCount = useCartCount(); // ✅ live reactive count from context
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -306,18 +310,19 @@ const Header: React.FC<HeaderProps> = ({
                 <button className={styles.iconButton} aria-label="Wishlist">
                   <Heart size={20} aria-hidden="true" />
                 </button>
-                <button
-                  className={styles.cartButton}
-                  onClick={() => navigate("/cart")}
-                  aria-label={`Shopping cart with ${cartCount} item${cartCount !== 1 ? 's' : ''}`}
-                >
-                  <ShoppingCart size={20} aria-hidden="true" />
-                  {cartCount > 0 && (
-                    <span className={styles.cartBadge} aria-hidden="true">
-                      {cartCount}
-                    </span>
-                  )}
-                </button>
+
+                    <button
+                        className={styles.cartButton}
+                        onClick={() => navigate("/cart")}
+                        aria-label={`Shopping cart with ${cartCount} item${cartCount !== 1 ? "s" : ""}`}
+                      >
+                        <ShoppingCart size={22} aria-hidden="true" />
+                        {cartCount > 0 && (
+                                      <span className={styles.cartBadge} aria-hidden="true">
+                                        {cartCount}
+                                      </span>
+                        )}
+                   </button>
               </div>
             </div>
           </div>

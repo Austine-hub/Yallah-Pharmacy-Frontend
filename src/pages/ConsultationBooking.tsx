@@ -179,17 +179,17 @@ const ConsultationBooking: React.FC = () => {
         {currentStep === 2 && (
           <div className={styles.step}>
             <h2>Request an online consultation</h2>
-            <h3 className={styles.consentTitle}>MYDAWA TELEHEALTH PATIENT CONSENT FORM</h3>
+            <h3 className={styles.consentTitle}>YALLAH TELEHEALTH PATIENT CONSENT FORM</h3>
             <p className={styles.consentSubtitle}>By clicking "I agree" you are hereby consenting to:</p>
             
             <div className={styles.consentBox}>
               <div className={styles.consentSection}>
                 <h4>Consent</h4>
-                <p>MYDAWA holding and processing any data (including sensitive data) provided by you to MYDAWA for all purposes relating to your medical consultation including for the purpose of evaluating and diagnosing your medical condition and any other health complaints, using appropriate telecommunication technologies.</p>
+                <p>YALLAH holding and processing any data (including sensitive data) provided by you to YALLAH for all purposes relating to your medical consultation including for the purpose of evaluating and diagnosing your medical condition and any other health complaints, using appropriate telecommunication technologies.</p>
               </div>
 
               <ul className={styles.consentList}>
-                <li>Authorizing MYDAWA to use appropriate telecommunications for evaluating and diagnosing medical conditions and health complaints.</li>
+                <li>Authorizing YALLAH to use appropriate telecommunications for evaluating and diagnosing medical conditions and health complaints.</li>
                 <li>Understanding that laws protecting medical information confidentiality apply to telemedicine, ensuring disclosed information remains confidential.</li>
                 <li>Acknowledging that personal data may be disclosed if requested or required by law, regulatory authority, or governmental agency regulations.</li>
                 <li>Accepting the need for a PC, laptop, or mobile device with a good internet connection for effective telemedicine appointments.</li>
