@@ -17,6 +17,7 @@ import Header from "./components/header/Header";
 import Footer from "./components/footer/Footer";
 import BottomNav from "./components/footer/BottomNav";
 import Dashboard from "./pages/Dashboard";
+import ConsultationBooking from "./pages/ConsultationBooking";
 
 // Lazy pages & route components
 const HomePage = lazy(() => import("./pages/Home"));
@@ -238,6 +239,8 @@ const App: FC = () => {
                 <Route path="/prescription/upload" element={<PrescriptionUpload />} />
                 <Route path="/prescription/refill" element={<RequestPrescription />} />
                 <Route path="/prescription" element={<Prescription />} />
+                <Route path="/consultation" element={<ConsultationBooking/>} />
+                
 
                 {/* About */}
                 <Route path="/about/story" element={<OurStory />} />
