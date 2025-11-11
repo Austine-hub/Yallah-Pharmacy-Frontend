@@ -87,7 +87,7 @@ const Header: React.FC<HeaderProps> = ({
   const [deliveryLocation, setDeliveryLocation] = useState(initialLocation);
   const [showLocationMenu, setShowLocationMenu] = useState(false);
   const [mode, setMode] = useState<"Delivery" | "Pickup">("Delivery");
-  const [selectedWarehouse, setSelectedWarehouse] = useState("MYDAWA Nairobi Warehouse");
+  const [selectedWarehouse, setSelectedWarehouse] = useState("YALLAH Nairobi Warehouse");
 
   const navigate = useNavigate();
   const cartCount = useCartCount();
@@ -381,19 +381,19 @@ const Header: React.FC<HeaderProps> = ({
                             <input
                               type="radio"
                               name="warehouse"
-                              checked={selectedWarehouse === "MYDAWA Mombasa Warehouse"}
-                              onChange={() => setSelectedWarehouse("MYDAWA Mombasa Warehouse")}
+                              checked={selectedWarehouse === "YALLAH Mombasa Warehouse"}
+                              onChange={() => setSelectedWarehouse("YALLAH Mombasa Warehouse")}
                             />
-                            <span>MYDAWA Mombasa Warehouse</span>
+                            <span>YALLAH Mombasa Warehouse</span>
                           </label>
                           <label className={styles.warehouseOption}>
                             <input
                               type="radio"
                               name="warehouse"
-                              checked={selectedWarehouse === "MYDAWA Nairobi Warehouse"}
-                              onChange={() => setSelectedWarehouse("MYDAWA Nairobi Warehouse")}
+                              checked={selectedWarehouse === "YALLAH Nairobi Warehouse"}
+                              onChange={() => setSelectedWarehouse("YALLAH Nairobi Warehouse")}
                             />
-                            <span>MYDAWA Nairobi Warehouse</span>
+                            <span>YALLAH Nairobi Warehouse</span>
                           </label>
                         </>
                       ) : (
@@ -535,19 +535,19 @@ const Header: React.FC<HeaderProps> = ({
                         <input
                           type="radio"
                           name="warehouse"
-                          checked={selectedWarehouse === "MYDAWA Mombasa Warehouse"}
-                          onChange={() => setSelectedWarehouse("MYDAWA Mombasa Warehouse")}
+                          checked={selectedWarehouse === "YALLAH Mombasa Warehouse"}
+                          onChange={() => setSelectedWarehouse("YALLAH Mombasa Warehouse")}
                         />
-                        <span>MYDAWA Mombasa Warehouse</span>
+                        <span>YALLAH Mombasa Warehouse</span>
                       </label>
                       <label className={styles.warehouseOption}>
                         <input
                           type="radio"
                           name="warehouse"
-                          checked={selectedWarehouse === "MYDAWA Nairobi Warehouse"}
-                          onChange={() => setSelectedWarehouse("MYDAWA Nairobi Warehouse")}
+                          checked={selectedWarehouse === "YALLAH Nairobi Warehouse"}
+                          onChange={() => setSelectedWarehouse("YALLAH Nairobi Warehouse")}
                         />
-                        <span>MYDAWA Nairobi Warehouse</span>
+                        <span>YALLAH Nairobi Warehouse</span>
                       </label>
                     </>
                   ) : (
