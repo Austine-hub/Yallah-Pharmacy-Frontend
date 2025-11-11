@@ -20,6 +20,7 @@ import Dashboard from "./pages/Dashboard";
 import ConsultationBooking from "./pages/ConsultationBooking";
 import ProductCarousel from "./pages/ProductCarousel";
 import BeautyProducts from "./pages/BeautyProducts";
+import Diapers from "./promo/Diapers";
 
 // Lazy pages & route components
 const HomePage = lazy(() => import("./pages/Home"));
@@ -302,7 +303,9 @@ const App: FC = () => {
                 {/* Banners */}
                 <Route path="/deals/wellness-products" element={<MensHealth/>} />
                 <Route path="/deals/skincare-essentials" element={<SkinCare1/>} />     
-                <Route path="/offers/makeup" element={<BeautyProducts/>} />             
+                <Route path="/offers/makeup" element={<BeautyProducts/>} />  
+                <Route path="/offers/diapers" element={<Diapers/>} />  
+                         
                
                
 
