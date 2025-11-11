@@ -134,25 +134,19 @@ const ConsultationBooking: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.progressBar}>
-        {steps.map((step, index) => (
-          <React.Fragment key={step.number}>
-            <div className={styles.stepItem}>
-              <div className={`${styles.stepCircle} ${
-                currentStep > step.number ? styles.completed :
-                currentStep === step.number ? styles.active : ''
-              }`}>
-                {currentStep > step.number ? <Check size={16} /> : step.number}
-              </div>
-              <span className={styles.stepLabel}>{step.title}</span>
-            </div>
-            {index < steps.length - 1 && (
-              <div className={`${styles.stepConnector} ${
-                currentStep > step.number ? styles.connectorCompleted : ''
-              }`} />
-            )}
-          </React.Fragment>
-        ))}
+<div className={styles.progressBar}>
+        <div className={styles.stepCounter}>
+          <span className={styles.currentStepNumber}>{currentStep}</span>
+          <span className={styles.stepDivider}>/</span>
+          <span className={styles.totalSteps}>{steps.length}</span>
+        </div>
+        <div className={styles.stepTitle}>{steps[currentStep - 1].title}</div>
+        <div className={styles.progressBarTrack}>
+          <div 
+            className={styles.progressBarFill} 
+            style={{ width: `${(currentStep / steps.length) * 100}%` }}
+          />
+        </div>
       </div>
 
       <div className={styles.content}>
