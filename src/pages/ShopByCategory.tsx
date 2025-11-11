@@ -9,6 +9,8 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import styles from "./ShopByCategory.module.css";
 
+
+
 // === CATEGORY IMAGES ===
 import pic1 from "../assets/shop1/cough.png";
 import pic2 from "../assets/shop1/accessories.png";

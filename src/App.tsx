@@ -11,6 +11,7 @@ import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./theme/ThemeProvider";
 import appStyles from "./App.module.css";
+import Loader from "./components/Loader";
 
 // Core layout (eager)
 import Header from "./components/header/Header";
@@ -21,6 +22,7 @@ import ConsultationBooking from "./pages/ConsultationBooking";
 import ProductCarousel from "./pages/ProductCarousel";
 import BeautyProducts from "./pages/BeautyProducts";
 import Diapers from "./promo/Diapers";
+import GlobalLoadingProvider from "./components/GlobalLoadingProvider";
 
 // Lazy pages & route components
 const HomePage = lazy(() => import("./pages/Home"));
@@ -196,7 +198,8 @@ const App: FC = () => {
 
           {/* Main */}
           <main className={appStyles.mainContent}>
-            <Suspense fallback={<LoadingFallback />}>
+           <GlobalLoadingProvider>
+            <Suspense fallback={<Loader />}>
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/dashboard" element={<Dashboard/>} />
@@ -319,6 +322,7 @@ const App: FC = () => {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
+            </GlobalLoadingProvider>
           </main>
 
           {/* Footer (eager) */}
@@ -327,6 +331,7 @@ const App: FC = () => {
         </CartProvider>
       </AuthProvider>
     </ThemeProvider>
+    
   );
 };
 
