@@ -45,7 +45,7 @@ const Offers1: React.FC = () => {
   };
 
   const handleCardClick = (productId: string) => {
-    navigate(`/product/${productId}`);
+    navigate(`/new-beauty/${productId}`);
   };
 
   const handleAddToCart = (

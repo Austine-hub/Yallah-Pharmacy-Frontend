@@ -280,6 +280,7 @@ const App: FC = () => {
                 <Route path="/diabetes-product/:id" element={<DiabetesDetails />} />
                 <Route path="/respiratory/:id" element={<RespiratoryDetails />} />
                 <Route path="/htn-product/:id" element={<HTNDetails />} />
+                <Route path="/new-beauty/:id" element={<Offers1D/>} />
 
                 {/* 404 */}
                 <Route path="*" element={<NotFound />} />
