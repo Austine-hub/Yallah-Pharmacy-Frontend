@@ -1,12 +1,12 @@
 // ============================================================
-// File: ShopByCategory.tsx — 2025 Production-Ready Edition
+// File: ShopByCategory.tsx — Static Page Routing Version (2025)
 // ============================================================
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { toast } from "react-hot-toast";
-import { FaChevronLeft, FaChevronRight, FaTimes } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import styles from "./ShopByCategory.module.css";
 
 // === CATEGORY IMAGES ===
@@ -27,26 +27,29 @@ interface Category {
   id: string;
   title: string;
   image: string;
+  path: string; // ✅ explicit path for static route
 }
 
 const categories: Category[] = [
-  { id: "general", title: "General Wellness & Support", image: pic1 },
-  { id: "personal", title: "Personal & Lifestyle", image: pic7 },
-  { id: "private", title: "Discreet / Private Purchases", image: pic8 },
-  { id: "sexual", title: "Sexual & Reproductive Health", image: pic5 },
-  { id: "sti", title: "STI Management", image: pic7 },
-  { id: "vaginal", title: "Vaginal & Genital Hygiene", image: pic8 },
-  { id: "cough", title: "Cough & Cold", image: pic1 },
-  { id: "allergy", title: "Allergy", image: pic7 },
-  { id: "heartburn", title: "Heartburn", image: pic8 },
-  { id: "chronic", title: "Chronic Diseases", image: pic6 },
-  { id: "vitamins", title: "Vitamins & Supplements", image: pic3 },
-  { id: "reproductive", title: "Reproductive Health", image: pic5 },
-  { id: "accessories", title: "Medical Accessories", image: pic2 },
-  { id: "other", title: "Other Ailments", image: pic9 },
-  { id: "cramps", title: "Menstrual Cramps", image: pic10 },
-  { id: "acne", title: "Acne / Pimples", image: pic11 },
-  { id: "uti", title: "UTI", image: pic12 },
+
+  { id: "uti", title: "UTI", image: pic12, path: "/category/uti" },
+  { id: "general", title: "General Wellness & Support", image: pic1, path: "/category/general" },
+  { id: "accessories", title: "Medical Accessories", image: pic2, path: "/category/accessories" },
+  { id: "personal", title: "Personal & Lifestyle", image: pic7, path: "/category/personal" },
+  { id: "cough", title: "Cough & Cold", image: pic1, path: "/category/cough" },
+  { id: "vitamins", title: "Vitamins & Supplements", image: pic3, path: "/category/vitamins" },
+  { id: "private", title: "Discreet / Private Purchases", image: pic8, path: "/category/private" },
+  { id: "sexual", title: "Sexual & Reproductive Health", image: pic5, path: "/category/sexual" },
+  { id: "sti", title: "STI Management", image: pic7, path: "/category/sti" },
+  { id: "heartburn", title: "Heartburn", image: pic8, path: "/category/heartburn" },
+  { id: "vaginal", title: "Vaginal & Genital Hygiene", image: pic8, path: "/category/vaginal" },
+  { id: "allergy", title: "Allergy", image: pic7, path: "/category/allergy" },
+  { id: "chronic", title: "Chronic Diseases", image: pic6, path: "/category/chronic" },
+  { id: "reproductive", title: "Reproductive Health", image: pic5, path: "/category/reproductive" },
+  { id: "other", title: "Other Ailments", image: pic9, path: "/category/other" },
+  { id: "cramps", title: "Menstrual Cramps", image: pic10, path: "/category/cramps" },
+  { id: "acne", title: "Acne / Pimples", image: pic11, path: "/category/acne" },
+ 
 ];
 
 // ============================================================
@@ -54,34 +57,21 @@ const categories: Category[] = [
 // ============================================================
 const ShopByCategory: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  // Scroll handler
   const handleScroll = (direction: "left" | "right") => {
     const container = scrollRef.current;
     if (!container) return;
-    const scrollAmount = direction === "left" ? -container.clientWidth * 0.8 : container.clientWidth * 0.8;
+    const scrollAmount =
+      direction === "left" ? -container.clientWidth * 0.8 : container.clientWidth * 0.8;
     container.scrollBy({ left: scrollAmount, behavior: "smooth" });
   };
 
-  // Quick View handler
-  const handleImageClick = (image: string) => {
-    setSelectedImage(image);
-    toast.success("Quick view opened!");
-  };
-
-  const closeModal = () => setSelectedImage(null);
-
-  // Keyboard close support (ESC key)
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeModal();
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, []);
-
   const { ref: sectionRef, inView } = useInView({ triggerOnce: true, threshold: 0.2 });
+
+  const handleCardClick = (path: string) => {
+    navigate(path);
+  };
 
   return (
     <section ref={sectionRef} className={styles.section} aria-labelledby="shop-category-title">
@@ -113,17 +103,13 @@ const ShopByCategory: React.FC = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: index * 0.05, duration: 0.4 }}
+              onClick={() => handleCardClick(cat.path)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === "Enter" && handleCardClick(cat.path)}
             >
               <div className={styles.imageWrapper}>
                 <img src={cat.image} alt={cat.title} className={styles.image} loading="lazy" />
-                <motion.button
-                  className={styles.quickViewBtn}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => handleImageClick(cat.image)}
-                >
-                  Quick View
-                </motion.button>
               </div>
               <h3 className={styles.cardTitle}>{cat.title}</h3>
             </motion.article>
@@ -138,29 +124,6 @@ const ShopByCategory: React.FC = () => {
           <FaChevronRight />
         </button>
       </div>
-
-      {/* === MODAL === */}
-      {selectedImage && (
-        <motion.div
-          className={styles.modalBackdrop}
-          onClick={closeModal}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          <motion.div
-            className={styles.modalContent}
-            onClick={(e) => e.stopPropagation()}
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.25 }}
-          >
-            <button className={styles.closeBtn} onClick={closeModal} aria-label="Close preview">
-              <FaTimes />
-            </button>
-            <img src={selectedImage} alt="Quick View" className={styles.modalImage} />
-          </motion.div>
-        </motion.div>
-      )}
     </section>
   );
 };

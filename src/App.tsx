@@ -18,6 +18,8 @@ import Footer from "./components/footer/Footer";
 import BottomNav from "./components/footer/BottomNav";
 import Dashboard from "./pages/Dashboard";
 import ConsultationBooking from "./pages/ConsultationBooking";
+import ProductCarousel from "./pages/ProductCarousel";
+import BeautyProducts from "./pages/BeautyProducts";
 
 // Lazy pages & route components
 const HomePage = lazy(() => import("./pages/Home"));
@@ -284,6 +286,31 @@ const App: FC = () => {
                 <Route path="/respiratory/:id" element={<RespiratoryDetails />} />
                 <Route path="/htn-product/:id" element={<HTNDetails />} />
                 <Route path="/new-beauty/:id" element={<Offers1D/>} />
+
+                {/* ShopByCategory */}
+                <Route path="/category/general" element={<ProductCarousel/>} />
+                <Route path="category/accessories" element={<Equipment/>} />
+                <Route path="/category/sexual" element={<Sexual/>} />
+                <Route path="/category/sti" element={<WomenHealthShop/>} />
+                <Route path="/category/uti" element={<UTI/>} />
+                <Route path="/category/cough" element={<CoughFluCold/>} />
+                <Route path="/category/vitamins" element={<Vitamins/>} />
+                <Route path="/category/reproductive" element={<Sexual/>} />
+                <Route path="/category/personal" element={<MensHealth/>} />
+
+
+                {/* Banners */}
+                <Route path="/deals/wellness-products" element={<MensHealth/>} />
+                <Route path="/deals/skincare-essentials" element={<SkinCare1/>} />     
+                <Route path="/offers/makeup" element={<BeautyProducts/>} />             
+               
+               
+
+                
+                
+                
+
+                
 
                 {/* 404 */}
                 <Route path="*" element={<NotFound />} />
