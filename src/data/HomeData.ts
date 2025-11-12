@@ -1,4 +1,4 @@
-// ===============================================
+/// =============================================== 
 // 🧾 HomeData.ts - MODEL LAYER
 // Single source of truth for Home Healthcare products
 // Pure data + business logic utilities (no UI concerns)
@@ -328,12 +328,7 @@ export const products: Product[] = [
     stock: 42,
     image: pic12,
     trending: false,
-    features: [
-      "6 heat settings",
-      "4 timer options",
-      "Auto shut-off",
-      "Washable cover",
-    ],
+    features: ["6 heat settings", "4 timer options", "Auto shut-off", "Washable cover"],
     specifications: {
       Size: "30 x 60 cm",
       "Power Rating": "100W",
@@ -399,12 +394,7 @@ export const products: Product[] = [
     stock: 35,
     image: pic15,
     trending: false,
-    features: [
-      "Height adjustable",
-      "Lightweight aluminum",
-      "Non-slip tip",
-      "Contoured handle",
-    ],
+    features: ["Height adjustable", "Lightweight aluminum", "Non-slip tip", "Contoured handle"],
     specifications: {
       Material: "Aluminum",
       "Height Range": "76-99 cm",
@@ -418,37 +408,21 @@ export const products: Product[] = [
 // ⚙️ UTILITY FUNCTIONS (Business Logic)
 // ===============================================
 
-/**
- * Find product by ID
- */
 export const getProductById = (id: string | number): Product | undefined => {
   const numericId = typeof id === "string" ? parseInt(id, 10) : id;
   return products.find((p) => p.id === numericId);
 };
 
-/**
- * Get trending products
- */
 export const getTrendingProducts = (): Product[] => products.filter((p) => p.trending);
 
-/**
- * Get similar products (same category, excluding current product)
- */
-export const getSimilarProducts = (
-  id: string | number,
-  limit: number = 4
-): Product[] => {
+export const getSimilarProducts = (id: string | number, limit = 4): Product[] => {
   const product = getProductById(id);
   if (!product) return [];
-
   return products
     .filter((p) => p.category === product.category && p.id !== product.id)
     .slice(0, limit);
 };
 
-/**
- * Sort products by various criteria
- */
 export const sortProducts = (option: SortOption, productList = products): Product[] => {
   const sorted = [...productList];
   switch (option) {
@@ -467,21 +441,12 @@ export const sortProducts = (option: SortOption, productList = products): Produc
   }
 };
 
-/**
- * Filter by brand
- */
 export const filterByBrand = (brand: string): Product[] =>
   products.filter((p) => p.brand.toLowerCase() === brand.toLowerCase());
 
-/**
- * Filter by category
- */
 export const filterByCategory = (category: string): Product[] =>
   products.filter((p) => p.category.toLowerCase() === category.toLowerCase());
 
-/**
- * Keyword search (name + description + category)
- */
 export const searchProducts = (query: string): Product[] => {
   const lower = query.toLowerCase();
   return products.filter(
@@ -493,40 +458,22 @@ export const searchProducts = (query: string): Product[] => {
   );
 };
 
-/**
- * Get all unique brands
- */
 export const getAllBrands = (): string[] =>
   Array.from(new Set(products.map((p) => p.brand))).sort();
 
-/**
- * Get all unique categories
- */
 export const getAllCategories = (): string[] =>
   Array.from(new Set(products.map((p) => p.category))).sort();
 
-/**
- * Format price with KES currency
- */
 export const formatPrice = (price: number): string => `KES ${price.toLocaleString()}`;
 
-/**
- * Check if product is in stock
- */
 export const isInStock = (id: string | number): boolean => {
   const product = getProductById(id);
   return product ? product.stock > 0 : false;
 };
 
-/**
- * Get low stock products (threshold: 50 units)
- */
-export const getLowStockProducts = (threshold: number = 50): Product[] =>
+export const getLowStockProducts = (threshold = 50): Product[] =>
   products.filter((p) => p.stock > 0 && p.stock <= threshold);
 
-/**
- * Get products by price range
- */
 export const getProductsByPriceRange = (min: number, max: number): Product[] =>
   products.filter((p) => p.price >= min && p.price <= max);
 

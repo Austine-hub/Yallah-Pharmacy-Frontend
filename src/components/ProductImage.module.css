@@ -1,0 +1,94 @@
+/* ============================================================
+   🎨 ProductImage.module.css
+   Clean, responsive image container with animated loading
+   Compatible with <Loader mode="inline" />
+   ============================================================ */
+
+.root {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  border-radius: 0.75rem; /* 12px rounded edges */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: opacity 0.5s ease-in-out, transform 0.3s ease;
+  user-select: none;
+  pointer-events: none;
+}
+
+.imgHidden {
+  opacity: 0;
+  transform: scale(0.98);
+}
+
+.imgVisible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  transition: opacity 0.3s ease;
+  pointer-events: none; /* Allow clicks through when loader disappears */
+}
+
+.backdrop {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(6px);
+}
+
+/* Fallback when image fails to load */
+.fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  text-align: center;
+  padding: 1rem;
+  gap: 0.5rem;
+}
+
+.fallback svg {
+  stroke: #bbb;
+  width: 48px;
+  height: 48px;
+  opacity: 0.8;
+}
+
+.fallbackText {
+  font-size: 0.9rem;
+  color: #777;
+  letter-spacing: 0.02em;
+}
+
+/* Subtle hover effect when loaded (optional aesthetic) */
+.root:hover .imgVisible {
+  transform: scale(1.03);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+  .root {
+    border-radius: 0.5rem;
+  }
+  .fallbackText {
+    font-size: 0.8rem;
+  }
+}

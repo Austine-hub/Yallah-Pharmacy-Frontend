@@ -150,3 +150,27 @@
     animation: none;
   }
 }
+
+.fullscreen {
+  position: fixed;
+  inset: 0;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.inline {
+  position: relative;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.noBackdrop {
+  background: transparent !important;
+  box-shadow: none;
+}
